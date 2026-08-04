@@ -1,0 +1,39 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: unipro
+      POSTGRES_PASSWORD: unipro
+      POSTGRES_DB: unipro
+    ports:
+      - "5432:5432"
+    volumes:
+      - unipro_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U unipro -d unipro"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000}
+      # Prefer Supabase URI from .env for real auth. Local db is for offline job seed only.
+      DATABASE_URL: ${DATABASE_URL:-postgresql+psycopg2://unipro:unipro@db:5432/unipro}
+      # Must be Supabase JWT Secret when validating real sessions
+      JWT_SECRET: ${JWT_SECRET:-dev-secret-change-me}
+      JWT_AUDIENCE: ${JWT_AUDIENCE:-authenticated}
+      # GEMINI_API_KEY: set in .env or shell; never commit it
+      # Set false when DATABASE_URL is Supabase (users FK → auth.users)
+      SEED_ON_STARTUP: ${SEED_ON_STARTUP:-true}
+    volumes:
+      - ./backend/app:/srv/app
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  unipro_pgdata:

@@ -1,0 +1,420 @@
+export type Locale = 'en' | 'th';
+
+export type TranslationKey = keyof typeof en;
+
+const en = {
+  // nav
+  'nav.home': 'Home',
+  'nav.browse': 'Browse Internships',
+  'nav.smartmatch': 'SmartMatch AI',
+  'nav.scholarships': 'Scholarship Ledger',
+  'nav.saved': 'Saved Opportunities',
+  'nav.applications': 'My Applications',
+  'nav.about': 'About UniPro',
+  'nav.menu': 'Menu',
+  'nav.close': 'Close',
+  'nav.memberAccess': 'Member Access',
+  'nav.signIn': 'Sign In',
+  'nav.createAccount': 'Create Account',
+  'nav.signOut': 'Sign Out',
+  'nav.userProfile': 'User Profile',
+  'nav.guest': 'Guest User',
+  'nav.signInHint': 'Sign in to sync your data',
+  'nav.theme': 'Theme',
+  'nav.language': 'Language',
+  'nav.dark': 'Dark',
+  'nav.light': 'Light',
+
+  // common
+  'common.loading': 'Loading UniPro...',
+  'common.all': 'All',
+  'common.back': 'Back',
+  'common.signIn': 'Sign in',
+  'common.signInRequired': 'Sign in required',
+  'common.signInRequiredBody':
+    'Create an account or sign in to view saved roles, applications, and your profile.',
+
+  // auth
+  'auth.welcome': 'Welcome to UniPro',
+  'auth.subtitle': 'Sign in with email, or create an account and verify the code we send you.',
+  'auth.otpSubtitle': 'Enter the 6-digit code from your email to finish creating your account.',
+  'auth.createAccount': 'Create account',
+  'auth.email': 'Email',
+  'auth.password': 'Password',
+  'auth.fullName': 'Full name',
+  'auth.role': 'I am a',
+  'auth.roleStudent': 'Student',
+  'auth.roleCompany': 'Company',
+  'auth.otpCode': 'Verification code',
+  'auth.verifyCode': 'Verify code',
+  'auth.working': 'Please wait…',
+  'auth.switchToRegister': 'Need an account? Create one',
+  'auth.switchToSignIn': 'Already registered? Sign in',
+  'auth.errorGeneric': 'Something went wrong. Try again.',
+
+  // footer
+  'footer.tagline':
+    'Internships and scholarships for Thai university students. Built by students, for students.',
+  'footer.platform': 'Platform',
+  'footer.account': 'Account',
+  'footer.connect': 'Connect',
+  'footer.browse': 'Browse',
+  'footer.smartmatch': 'SmartMatch',
+  'footer.scholarships': 'Scholarships',
+  'footer.about': 'About',
+  'footer.saved': 'Saved',
+  'footer.applications': 'Applications',
+  'footer.profile': 'Profile',
+  'footer.copyright': '© 2024 UniPro Thailand',
+  'footer.mission': 'Built to help Thai students land their first big opportunity.',
+
+  // home
+  'home.eyebrow': 'The Future of Internships in Thailand',
+  'home.headline': 'Matching talent with opportunity.',
+  'home.subhead':
+    "UniPro is Thailand's premier professional catalyst, using AI to perfectly align university students with top-tier career paths.",
+  'home.searchPlaceholder': 'What are you studying? (e.g. Computer Science, Marketing...)',
+  'home.aiInsights': 'AI Insights',
+  'home.analyzing': 'Analyzing...',
+  'home.browseRoles': 'Browse All Roles',
+  'home.smartmatchCta': 'SmartMatch Workflow',
+  'home.adviceTitle': 'Personalized Advice',
+  'home.growthSectors': 'Growth Sectors',
+  'home.skillsPolish': 'Skills to Polish',
+  'home.feature1Title': 'Intelligent Search',
+  'home.feature1Desc': 'Filter through 500+ curated roles in tech, design, and business.',
+  'home.feature2Title': 'AI-Powered Matching',
+  'home.feature2Desc': 'Our proprietary algorithm maps your CV to the perfect residency.',
+  'home.feature3Title': 'Instant Access',
+  'home.feature3Desc': "Direct connections with Thailand's leading innovation hubs.",
+  'home.deepDiveTitle': 'SmartMatch AI Deep Dive',
+  'home.deepDiveBody':
+    'Stop applying blindly. SmartMatch analyzes your technical trajectory, soft skills, and academic evaluations to predict placement success.',
+  'home.bullet1': 'CV Vector Analysis',
+  'home.bullet2': 'Recommender Integration',
+  'home.bullet3': 'Stable Matching Algorithm',
+  'home.launchSmartmatch': 'Launch SmartMatch',
+
+  // browse
+  'browse.title': 'Browse Opportunities',
+  'browse.searchPlaceholder': 'Search companies, roles, or skills...',
+  'browse.categories': 'Categories',
+  'browse.location': 'Location',
+  'browse.showing': 'Showing {count} results',
+  'browse.empty': 'No positions match your current filters.',
+
+  // smartmatch
+  'smart.badge': 'AI Propelled Matching',
+  'smart.title': 'SmartMatch AI Catalyst',
+  'smart.subtitle':
+    'Complete our 4-step workflow to unlock precise internship alignments tailored to your unique profile.',
+  'smart.step1': 'CV Upload',
+  'smart.step2': 'Evaluation',
+  'smart.step3': 'Preferences',
+  'smart.step4': 'Match Results',
+  'smart.processing': 'Synthesizing Data...',
+  'smart.uploadTitle': 'Upload your Resume / CV',
+  'smart.uploadBody':
+    'We read your CV in memory, extract skills, and store only a skill vector — the file is never saved.',
+  'smart.fileReceived': 'File Received',
+  'smart.dragPdf': 'DRAG PDF OR CLICK TO SELECT',
+  'smart.uploadRequired': 'Please select a CV file first.',
+  'smart.analyzeFailed': 'Could not analyze CV. Sign in and try again.',
+  'smart.matchFailed': 'Could not run matching. Try again.',
+  'smart.processingCv': 'Extracting skills & embedding…',
+  'smart.analyzeOk': 'Stored {skills} skills · vector dims {dims} · CV not saved',
+  'smart.extractedSkills': 'Extracted skills',
+  'smart.noSkills': 'No skills detected yet',
+  'smart.privacyNote': 'Your CV file was discarded after analysis. Only skills and the embedding vector are kept.',
+  'smart.evalTitle': 'Academic Endorsement',
+  'smart.evalBody':
+    'Generate a secure evaluation link for your professor or mentor. Their insights account for 30% of your total match score.',
+  'smart.copyLink': 'COPY LINK',
+  'smart.copyAlert': 'Evaluation link copied!',
+  'smart.whyTitle': 'Why this matters',
+  'smart.whyBody':
+    "Stable matching requires qualitative data. A mentor's rating on work ethic and communication bridges the gap between code and career.",
+  'smart.rankTitle': 'Rank your Ambitions',
+  'smart.rankBody':
+    "Based on initial processing, we've identified these top matches. Drag to rank them by your preference.",
+  'smart.doneTitle': 'Matches Synthesized',
+  'smart.doneBody': "We've calculated your optimal placements using the Gale-Shapley algorithm.",
+  'smart.score': 'Score',
+  'smart.continue': 'Continue Workflow',
+  'smart.dashboard': 'Go to Dashboard',
+
+  // saved
+  'saved.title': 'Saved Roles',
+  'saved.subtitle': 'Your curated selection of professional catalysts in Thailand.',
+  'saved.empty': 'No roles saved yet.',
+
+  // applications
+  'apps.title': 'Track Applications',
+  'apps.total': 'Total Submitted',
+  'apps.interviews': 'Interviews',
+  'apps.underReview': 'Under Review',
+  'apps.offers': 'Offers',
+  'apps.colPosition': 'Internship Position',
+  'apps.colStatus': 'Status',
+  'apps.colSubmitted': 'Submitted',
+  'apps.colActions': 'Actions',
+  'apps.status.applied': 'Applied',
+  'apps.status.under_review': 'Under Review',
+  'apps.status.interview': 'Interviewing',
+  'apps.status.accepted': 'Offer Received',
+  'apps.status.rejected': 'Closed',
+
+  // profile
+  'profile.edit': 'Edit Profile',
+  'profile.settings': 'Settings',
+  'profile.cv': 'CV / Resume',
+  'profile.update': 'Update',
+  'profile.updatedAgo': 'Updated 2 days ago',
+  'profile.stats': 'Statistics',
+  'profile.matchScore': 'Match Score',
+  'profile.applied': 'Applied',
+  'profile.education': 'Education',
+  'profile.skills': 'Skill Inventory',
+
+  // about
+  'about.title': 'Bridging the Gap',
+  'about.body':
+    'UniPro was born in Bangkok with a single mission: to redefine how the next generation of Thai builders find their professional footing. We believe an internship is more than just a 3-month tenure; it\'s a critical alignment phase for your future career.',
+  'about.dna': 'Our DNA',
+  'about.card1Title': 'Algorithmic Integrity',
+  'about.card1Body':
+    'We use stable matching algorithms to ensure students and companies are paired for success, not just filled for capacity.',
+  'about.card2Title': 'Thai-First Design',
+  'about.card2Body':
+    'Our platform is optimized for the local academic calendar and corporate structures unique to the Thai ecosystem.',
+  'about.faq': 'FAQ',
+  'about.q1': 'Is UniPro free for students?',
+  'about.a1':
+    'Yes, our core matching features and browse capabilities are always free for university students.',
+  'about.q2': 'How does SmartMatch work?',
+  'about.a2':
+    'It combines your CV data with professor recommendations to calculate a 95%+ accurate match for specific roles.',
+  'about.q3': 'Can I apply from any university?',
+  'about.a3': 'We currently support all major public and private universities across Thailand.',
+
+  // scholarship
+  'sch.badge': 'Privacy-preserving ledger',
+  'sch.title': 'Scholarship Ledger',
+  'sch.subtitle':
+    'Alumni outcomes shown with hashed identities — redesign route wired with UniPro-style mock data.',
+  'sch.allTracks': 'All tracks',
+  'sch.web': 'Web Development',
+  'sch.eng': 'Engineering',
+  'sch.acc': 'Accounting',
+  'sch.coverage': 'CV coverage',
+} as const;
+
+const th: Record<TranslationKey, string> = {
+  'nav.home': 'หน้าแรก',
+  'nav.browse': 'ค้นหาฝึกงาน',
+  'nav.smartmatch': 'SmartMatch AI',
+  'nav.scholarships': 'บัญชีทุนการศึกษา',
+  'nav.saved': 'รายการที่บันทึก',
+  'nav.applications': 'ใบสมัครของฉัน',
+  'nav.about': 'เกี่ยวกับ UniPro',
+  'nav.menu': 'เมนู',
+  'nav.close': 'ปิด',
+  'nav.memberAccess': 'สมาชิก',
+  'nav.signIn': 'เข้าสู่ระบบ',
+  'nav.createAccount': 'สร้างบัญชี',
+  'nav.signOut': 'ออกจากระบบ',
+  'nav.userProfile': 'โปรไฟล์ผู้ใช้',
+  'nav.guest': 'ผู้เยี่ยมชม',
+  'nav.signInHint': 'เข้าสู่ระบบเพื่อซิงก์ข้อมูลของคุณ',
+  'nav.theme': 'ธีม',
+  'nav.language': 'ภาษา',
+  'nav.dark': 'มืด',
+  'nav.light': 'สว่าง',
+
+  'common.loading': 'กำลังโหลด UniPro...',
+  'common.all': 'ทั้งหมด',
+  'common.back': 'ย้อนกลับ',
+  'common.signIn': 'เข้าสู่ระบบ',
+  'common.signInRequired': 'ต้องเข้าสู่ระบบ',
+  'common.signInRequiredBody':
+    'สร้างบัญชีหรือเข้าสู่ระบบเพื่อดูรายการที่บันทึก ใบสมัคร และโปรไฟล์ของคุณ',
+
+  'auth.welcome': 'ยินดีต้อนรับสู่ UniPro',
+  'auth.subtitle': 'เข้าสู่ระบบด้วยอีเมล หรือสร้างบัญชีแล้วยืนยันรหัสที่ส่งไปยังอีเมลของคุณ',
+  'auth.otpSubtitle': 'กรอกรหัส 6 หลักจากอีเมลเพื่อสร้างบัญชีให้เสร็จ',
+  'auth.createAccount': 'สร้างบัญชี',
+  'auth.email': 'อีเมล',
+  'auth.password': 'รหัสผ่าน',
+  'auth.fullName': 'ชื่อ-นามสกุล',
+  'auth.role': 'ฉันเป็น',
+  'auth.roleStudent': 'นักศึกษา',
+  'auth.roleCompany': 'บริษัท',
+  'auth.otpCode': 'รหัสยืนยัน',
+  'auth.verifyCode': 'ยืนยันรหัส',
+  'auth.working': 'กรุณารอสักครู่…',
+  'auth.switchToRegister': 'ยังไม่มีบัญชี? สร้างบัญชี',
+  'auth.switchToSignIn': 'มีบัญชีแล้ว? เข้าสู่ระบบ',
+  'auth.errorGeneric': 'เกิดข้อผิดพลาด ลองอีกครั้ง',
+
+  'footer.tagline':
+    'ฝึกงานและทุนการศึกษาสำหรับนักศึกษามหาวิทยาลัยไทย สร้างโดยนักศึกษา เพื่อนักศึกษา',
+  'footer.platform': 'แพลตฟอร์ม',
+  'footer.account': 'บัญชี',
+  'footer.connect': 'ติดต่อ',
+  'footer.browse': 'ค้นหา',
+  'footer.smartmatch': 'SmartMatch',
+  'footer.scholarships': 'ทุนการศึกษา',
+  'footer.about': 'เกี่ยวกับ',
+  'footer.saved': 'ที่บันทึก',
+  'footer.applications': 'ใบสมัคร',
+  'footer.profile': 'โปรไฟล์',
+  'footer.copyright': '© 2024 UniPro Thailand',
+  'footer.mission': 'สร้างขึ้นเพื่อช่วยให้นักศึกษาไทยได้โอกาสแรกที่สำคัญ',
+
+  'home.eyebrow': 'อนาคตของการฝึกงานในประเทศไทย',
+  'home.headline': 'จับคู่ความสามารถกับโอกาส',
+  'home.subhead':
+    'UniPro คือตัวเร่งอาชีพชั้นนำของไทย ที่ใช้ AI จับคู่นักศึกษากับเส้นทางอาชีพระดับแนวหน้าอย่างแม่นยำ',
+  'home.searchPlaceholder': 'คุณเรียนสาขาอะไร? (เช่น วิทยาการคอมพิวเตอร์, การตลาด...)',
+  'home.aiInsights': 'ข้อมูลเชิงลึก AI',
+  'home.analyzing': 'กำลังวิเคราะห์...',
+  'home.browseRoles': 'ดูตำแหน่งทั้งหมด',
+  'home.smartmatchCta': 'เวิร์กโฟลว์ SmartMatch',
+  'home.adviceTitle': 'คำแนะนำเฉพาะบุคคล',
+  'home.growthSectors': 'ภาคส่วนที่เติบโต',
+  'home.skillsPolish': 'ทักษะที่ควรพัฒนา',
+  'home.feature1Title': 'ค้นหาอัจฉริยะ',
+  'home.feature1Desc': 'คัดกรองตำแหน่งคัดสรรกว่า 500 ตำแหน่งในเทค ดีไซน์ และธุรกิจ',
+  'home.feature2Title': 'จับคู่ด้วย AI',
+  'home.feature2Desc': 'อัลกอริทึมของเราแมป CV ของคุณกับโอกาสที่เหมาะสม',
+  'home.feature3Title': 'เข้าถึงทันที',
+  'home.feature3Desc': 'เชื่อมต่อตรงกับศูนย์นวัตกรรมชั้นนำของไทย',
+  'home.deepDiveTitle': 'เจาะลึก SmartMatch AI',
+  'home.deepDiveBody':
+    'เลิกสมัครแบบมั่ว SmartMatch วิเคราะห์เส้นทางทักษะ ทักษะอ่อน และการประเมินทางวิชาการเพื่อทำนายความสำเร็จในการวางตำแหน่ง',
+  'home.bullet1': 'วิเคราะห์เวกเตอร์ CV',
+  'home.bullet2': 'ระบบแนะนำแบบบูรณาการ',
+  'home.bullet3': 'อัลกอริทึม Stable Matching',
+  'home.launchSmartmatch': 'เริ่ม SmartMatch',
+
+  'browse.title': 'ค้นหาโอกาส',
+  'browse.searchPlaceholder': 'ค้นหาบริษัท ตำแหน่ง หรือทักษะ...',
+  'browse.categories': 'หมวดหมู่',
+  'browse.location': 'สถานที่',
+  'browse.showing': 'แสดง {count} รายการ',
+  'browse.empty': 'ไม่มีตำแหน่งที่ตรงกับตัวกรองปัจจุบัน',
+
+  'smart.badge': 'การจับคู่ขับเคลื่อนด้วย AI',
+  'smart.title': 'SmartMatch AI Catalyst',
+  'smart.subtitle':
+    'ทำตามเวิร์กโฟลว์ 4 ขั้นตอนเพื่อปลดล็อกการจับคู่ฝึกงานที่เหมาะกับโปรไฟล์ของคุณ',
+  'smart.step1': 'อัปโหลด CV',
+  'smart.step2': 'การประเมิน',
+  'smart.step3': 'ความชอบ',
+  'smart.step4': 'ผลการจับคู่',
+  'smart.processing': 'กำลังประมวลผลข้อมูล...',
+  'smart.uploadTitle': 'อัปโหลดเรซูเม่ / CV',
+  'smart.uploadBody':
+    'เราอ่าน CV ในหน่วยความจำ สกัดทักษะ และเก็บเฉพาะเวกเตอร์ทักษะ — ไม่บันทึกไฟล์ CV',
+  'smart.fileReceived': 'ได้รับไฟล์แล้ว',
+  'smart.dragPdf': 'ลาก PDF หรือคลิกเพื่อเลือก',
+  'smart.uploadRequired': 'กรุณาเลือกไฟล์ CV ก่อน',
+  'smart.analyzeFailed': 'วิเคราะห์ CV ไม่สำเร็จ กรุณาเข้าสู่ระบบแล้วลองใหม่',
+  'smart.matchFailed': 'รันการจับคู่ไม่สำเร็จ ลองอีกครั้ง',
+  'smart.processingCv': 'กำลังสกัดทักษะและสร้างเวกเตอร์…',
+  'smart.analyzeOk': 'บันทึก {skills} ทักษะ · เวกเตอร์ {dims} มิติ · ไม่เก็บไฟล์ CV',
+  'smart.extractedSkills': 'ทักษะที่สกัดได้',
+  'smart.noSkills': 'ยังไม่พบทักษะ',
+  'smart.privacyNote': 'ไฟล์ CV ถูกลบหลังวิเคราะห์ เก็บเฉพาะทักษะและเวกเตอร์',
+  'smart.evalTitle': 'การรับรองทางวิชาการ',
+  'smart.evalBody':
+    'สร้างลิงก์ประเมินที่ปลอดภัยให้อาจารย์หรือพี่เลี้ยง ความเห็นของพวกเขามีน้ำหนัก 30% ของคะแนนจับคู่ทั้งหมด',
+  'smart.copyLink': 'คัดลอกลิงก์',
+  'smart.copyAlert': 'คัดลอกลิงก์ประเมินแล้ว!',
+  'smart.whyTitle': 'ทำไมถึงสำคัญ',
+  'smart.whyBody':
+    'Stable matching ต้องการข้อมูลเชิงคุณภาพ การให้คะแนนเรื่องจริยธรรมการทำงานและการสื่อสารช่วยเชื่อมช่องว่างระหว่างสกิลกับอาชีพ',
+  'smart.rankTitle': 'จัดอันดับเป้าหมายของคุณ',
+  'smart.rankBody':
+    'จากการประมวลผลเบื้องต้น เราพบตำแหน่งที่ตรงที่สุด ลากเพื่อจัดอันดับตามความชอบของคุณ',
+  'smart.doneTitle': 'สังเคราะห์ผลการจับคู่แล้ว',
+  'smart.doneBody': 'เราคำนวณตำแหน่งที่เหมาะสมด้วยอัลกอริทึม Gale-Shapley',
+  'smart.score': 'คะแนน',
+  'smart.continue': 'ดำเนินการต่อ',
+  'smart.dashboard': 'ไปที่แดชบอร์ด',
+
+  'saved.title': 'ตำแหน่งที่บันทึก',
+  'saved.subtitle': 'คอลเลกชันโอกาสอาชีพที่คุณคัดสรรในประเทศไทย',
+  'saved.empty': 'ยังไม่มีตำแหน่งที่บันทึก',
+
+  'apps.title': 'ติดตามใบสมัคร',
+  'apps.total': 'ส่งทั้งหมด',
+  'apps.interviews': 'สัมภาษณ์',
+  'apps.underReview': 'กำลังพิจารณา',
+  'apps.offers': 'ข้อเสนอ',
+  'apps.colPosition': 'ตำแหน่งฝึกงาน',
+  'apps.colStatus': 'สถานะ',
+  'apps.colSubmitted': 'วันที่ส่ง',
+  'apps.colActions': 'การกระทำ',
+  'apps.status.applied': 'สมัครแล้ว',
+  'apps.status.under_review': 'กำลังพิจารณา',
+  'apps.status.interview': 'สัมภาษณ์',
+  'apps.status.accepted': 'ได้รับข้อเสนอ',
+  'apps.status.rejected': 'ปิดแล้ว',
+
+  'profile.edit': 'แก้ไขโปรไฟล์',
+  'profile.settings': 'ตั้งค่า',
+  'profile.cv': 'CV / เรซูเม่',
+  'profile.update': 'อัปเดต',
+  'profile.updatedAgo': 'อัปเดตเมื่อ 2 วันที่แล้ว',
+  'profile.stats': 'สถิติ',
+  'profile.matchScore': 'คะแนนจับคู่',
+  'profile.applied': 'สมัครแล้ว',
+  'profile.education': 'การศึกษา',
+  'profile.skills': 'คลังทักษะ',
+
+  'about.title': 'เชื่อมช่องว่าง',
+  'about.body':
+    'UniPro ถือกำเนิดในกรุงเทพฯ ด้วยพันธกิจเดียว: เปลี่ยนวิธีที่คนสร้างรุ่นใหม่ของไทยค้นหาจุดยืนในอาชีพ เราเชื่อว่าการฝึกงานไม่ใช่แค่ช่วงเวลา 3 เดือน แต่เป็นช่วงจัดแนวทางสู่อนาคต',
+  'about.dna': 'DNA ของเรา',
+  'about.card1Title': 'ความถูกต้องของอัลกอริทึม',
+  'about.card1Body':
+    'เราใช้อัลกอริทึม stable matching เพื่อจับคู่นักศึกษากับบริษัทเพื่อความสำเร็จ ไม่ใช่แค่เติมโควตา',
+  'about.card2Title': 'ออกแบบเพื่อไทย',
+  'about.card2Body':
+    'แพลตฟอร์มของเราปรับให้เข้ากับปฏิทินการศึกษาและโครงสร้างองค์กรที่เป็นเอกลักษณ์ของระบบนิเวศไทย',
+  'about.faq': 'คำถามที่พบบ่อย',
+  'about.q1': 'UniPro ฟรีสำหรับนักศึกษาหรือไม่?',
+  'about.a1': 'ใช่ ฟีเจอร์จับคู่หลักและการค้นหาฟรีเสมอสำหรับนักศึกษามหาวิทยาลัย',
+  'about.q2': 'SmartMatch ทำงานอย่างไร?',
+  'about.a2':
+    'มันรวมข้อมูล CV กับคำแนะนำจากอาจารย์ เพื่อคำนวณความแม่นยำในการจับคู่กว่า 95% สำหรับตำแหน่งเฉพาะ',
+  'about.q3': 'สมัครจากมหาวิทยาลัยใดก็ได้หรือไม่?',
+  'about.a3': 'ขณะนี้เรารองรับมหาวิทยาลัยของรัฐและเอกชนหลักทั่วประเทศไทย',
+
+  'sch.badge': 'บัญชีที่รักษาความเป็นส่วนตัว',
+  'sch.title': 'บัญชีทุนการศึกษา',
+  'sch.subtitle':
+    'ผลลัพธ์ศิษย์เก่าแสดงด้วยตัวตนแบบแฮช — เส้นทาง redesign ที่เชื่อมข้อมูลจำลองสไตล์ UniPro',
+  'sch.allTracks': 'ทุกสาย',
+  'sch.web': 'พัฒนาเว็บ',
+  'sch.eng': 'วิศวกรรม',
+  'sch.acc': 'บัญชี',
+  'sch.coverage': 'ความครอบคลุม CV',
+};
+
+const dictionaries: Record<Locale, Record<TranslationKey, string>> = { en, th };
+
+export function translate(
+  locale: Locale,
+  key: TranslationKey,
+  vars?: Record<string, string | number>
+): string {
+  let text = dictionaries[locale][key] ?? dictionaries.en[key] ?? key;
+  if (vars) {
+    for (const [k, v] of Object.entries(vars)) {
+      text = text.replace(`{${k}}`, String(v));
+    }
+  }
+  return text;
+}

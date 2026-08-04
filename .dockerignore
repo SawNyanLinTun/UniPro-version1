@@ -1,0 +1,14 @@
+node_modules
+dist
+.venv
+backend
+.git
+.env
+.env.*
+!.env.example
+*.db
+*.sqlite3
+.cursor
+**/__pycache__
+*.log
+agent-transcripts

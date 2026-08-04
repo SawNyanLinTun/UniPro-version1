@@ -1,0 +1,316 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", "IBM Plex Sans Thai", "Anuphan", sans-serif;
+  --font-display: "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", "Anuphan", "IBM Plex Sans Thai", sans-serif;
+  --font-mono: "SF Mono", "JetBrains Mono", ui-monospace, monospace;
+
+  --color-bg: var(--color-bg);
+  --color-surface: var(--color-surface);
+  --color-surface-elevated: var(--color-surface-elevated);
+  --color-surface-hover: var(--color-surface-hover);
+  --color-border: var(--color-border);
+  --color-border-strong: var(--color-border-strong);
+  --color-text: var(--color-text);
+  --color-text-secondary: var(--color-text-secondary);
+  --color-text-muted: var(--color-text-muted);
+  --color-primary: var(--color-primary);
+  --color-primary-light: var(--color-primary-light);
+  --color-primary-dark: var(--color-primary-dark);
+  --color-primary-muted: var(--color-primary-muted);
+  --color-accent: var(--color-accent);
+  --color-accent-light: var(--color-accent-light);
+  --color-accent-muted: var(--color-accent-muted);
+  --color-success: var(--color-success);
+  --color-success-muted: var(--color-success-muted);
+  --color-error: var(--color-error);
+  --color-error-muted: var(--color-error-muted);
+  --color-on-primary: var(--color-on-primary);
+
+  --color-resin-bg: var(--color-bg);
+  --color-resin-glass: var(--color-surface);
+  --color-resin-border: var(--color-border);
+  --color-resin-cyan: var(--color-primary);
+  --color-resin-purple: var(--color-accent);
+  --color-resin-amber: #f5a524;
+  --color-resin-indigo: var(--color-primary);
+  --color-resin-pink: var(--color-error);
+  --color-resin-emerald: var(--color-success);
+}
+
+/* Smooth theme transitions - applied only during theme changes */
+html.theme-transition *,
+html.theme-transition *::before,
+html.theme-transition *::after {
+  transition: background-color 0.35s ease, color 0.35s ease, border-color 0.35s ease, fill 0.35s ease, stroke 0.35s ease, opacity 0.35s ease, box-shadow 0.35s ease !important;
+}
+
+/*
+  Palette inspired by Studio7 / Apple retail web:
+  soft gray canvases, near-black type, link blue, brand green.
+*/
+
+/* Base default = dark */
+:root {
+  --color-bg: #000000;
+  --color-surface: #000000;
+  --color-surface-elevated: #111111;
+  --color-surface-hover: #1a1a1a;
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-border-strong: rgba(255, 255, 255, 0.18);
+  --color-text: #f5f5f7;
+  --color-text-secondary: #a1a1a6;
+  --color-text-muted: #6e6e73;
+  --color-success: #34c759;
+  --color-success-muted: rgba(52, 199, 89, 0.14);
+  --color-error: #ff3b30;
+  --color-error-muted: rgba(255, 59, 48, 0.12);
+  --color-on-primary: #ffffff;
+
+  /* Studio7-inspired accents */
+  --color-primary: #0071e3;
+  --color-primary-light: #2997ff;
+  --color-primary-dark: #0077ed;
+  --color-primary-muted: rgba(0, 113, 227, 0.14);
+  --color-accent: #5bb946;
+  --color-accent-light: #6fd15a;
+  --color-accent-dark: #3f9a2f;
+  --color-accent-muted: rgba(91, 185, 70, 0.14);
+}
+
+[data-theme="midnight"] {
+  --color-bg: #000000;
+  --color-surface: #000000;
+  --color-surface-elevated: #111111;
+  --color-surface-hover: #1a1a1a;
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-border-strong: rgba(255, 255, 255, 0.18);
+  --color-text: #f5f5f7;
+  --color-text-secondary: #a1a1a6;
+  --color-text-muted: #6e6e73;
+  --color-success: #34c759;
+  --color-success-muted: rgba(52, 199, 89, 0.14);
+  --color-error: #ff3b30;
+  --color-error-muted: rgba(255, 59, 48, 0.12);
+  --color-on-primary: #ffffff;
+}
+
+/* Soft light — Studio7 type hierarchy on plain white */
+[data-theme="light"] {
+  --color-bg: #ffffff;
+  --color-surface: #ffffff;
+  --color-surface-elevated: #f5f5f7;
+  --color-surface-hover: #eef0f3;
+  --color-border: rgba(18, 18, 18, 0.08);
+  --color-border-strong: rgba(18, 18, 18, 0.14);
+  --color-text: #121212;
+  --color-text-secondary: rgba(18, 18, 18, 0.72);
+  --color-text-muted: #6e6e73;
+  --color-success: #248a3d;
+  --color-success-muted: rgba(36, 138, 61, 0.1);
+  --color-error: #d70015;
+  --color-error-muted: rgba(215, 0, 21, 0.1);
+  --color-on-primary: #ffffff;
+
+  --color-primary: #0071e3;
+  --color-primary-light: #147ce5;
+  --color-primary-dark: #0066cc;
+  --color-primary-muted: rgba(0, 113, 227, 0.1);
+  --color-accent: #5bb946;
+  --color-accent-light: #6fd15a;
+  --color-accent-dark: #3f9a2f;
+  --color-accent-muted: rgba(91, 185, 70, 0.12);
+}
+
+/* Keep accent presets, but default indigo maps to Studio7 blue/green */
+[data-accent="indigo"] {
+  --color-primary: #0071e3;
+  --color-primary-light: #2997ff;
+  --color-primary-dark: #0066cc;
+  --color-primary-muted: rgba(0, 113, 227, 0.12);
+  --color-accent: #5bb946;
+  --color-accent-light: #6fd15a;
+  --color-accent-muted: rgba(91, 185, 70, 0.12);
+}
+
+[data-theme="light"][data-accent="indigo"] {
+  --color-primary-muted: rgba(0, 113, 227, 0.1);
+  --color-accent-muted: rgba(91, 185, 70, 0.12);
+}
+
+[data-accent="emerald"] {
+  --color-primary: #5bb946;
+  --color-primary-light: #6fd15a;
+  --color-primary-dark: #3f9a2f;
+  --color-primary-muted: rgba(91, 185, 70, 0.12);
+  --color-accent: #0071e3;
+  --color-accent-light: #2997ff;
+  --color-accent-muted: rgba(0, 113, 227, 0.12);
+}
+
+[data-accent="rose"] {
+  --color-primary: #ff375f;
+  --color-primary-light: #ff6482;
+  --color-primary-dark: #d70015;
+  --color-primary-muted: rgba(255, 55, 95, 0.12);
+  --color-accent: #0071e3;
+  --color-accent-light: #2997ff;
+  --color-accent-muted: rgba(0, 113, 227, 0.12);
+}
+
+[data-accent="amber"] {
+  --color-primary: #f5a524;
+  --color-primary-light: #ffcc00;
+  --color-primary-dark: #c77d00;
+  --color-primary-muted: rgba(245, 165, 36, 0.14);
+  --color-accent: #0071e3;
+  --color-accent-light: #2997ff;
+  --color-accent-muted: rgba(0, 113, 227, 0.12);
+}
+
+[data-accent="violet"] {
+  --color-primary: #bf5af2;
+  --color-primary-light: #d48ff7;
+  --color-primary-dark: #8944ab;
+  --color-primary-muted: rgba(191, 90, 242, 0.12);
+  --color-accent: #5bb946;
+  --color-accent-light: #6fd15a;
+  --color-accent-muted: rgba(91, 185, 70, 0.12);
+}
+
+[data-accent="teal"] {
+  --color-primary: #00c7be;
+  --color-primary-light: #5de3dc;
+  --color-primary-dark: #0a9e97;
+  --color-primary-muted: rgba(0, 199, 190, 0.12);
+  --color-accent: #0071e3;
+  --color-accent-light: #2997ff;
+  --color-accent-muted: rgba(0, 113, 227, 0.12);
+}
+
+/* Base */
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  margin: 0;
+  overflow-x: hidden;
+  font-family: var(--font-sans);
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, .font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.025em;
+  color: var(--color-text);
+}
+
+html[data-lang="th"] body {
+  line-height: 1.7;
+  letter-spacing: 0;
+}
+
+html[data-lang="th"] h1,
+html[data-lang="th"] h2,
+html[data-lang="th"] h3 {
+  letter-spacing: 0;
+  line-height: 1.35;
+}
+
+/* UniPro orb / float helpers */
+.orb {
+  filter: blur(120px);
+  mix-blend-mode: screen;
+}
+
+[data-theme="midnight"] .orb,
+[data-mode="dark"] .orb {
+  display: none;
+}
+
+[data-theme="light"] .orb {
+  display: none;
+}
+
+@keyframes float {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(40px, 20px) scale(1.1); }
+}
+
+.animate-float {
+  animation: float 15s infinite alternate ease-in-out;
+}
+
+/* Custom utility classes */
+.glass-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 18px;
+  box-shadow: none;
+}
+
+[data-theme="light"] .glass-card {
+  box-shadow: 0 1px 2px rgba(18, 18, 18, 0.04), 0 10px 28px rgba(18, 18, 18, 0.05);
+}
+
+.glass-input {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+[data-theme="light"] .glass-input {
+  background: #ffffff;
+}
+
+.glass-input:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-muted);
+}
+
+.label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+/* Ensure clipped gradients stay readable */
+.bg-clip-text {
+  -webkit-text-fill-color: transparent;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes revealUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes subtleFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
