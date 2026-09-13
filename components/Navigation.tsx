@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
   Menu, X, User, Heart, Briefcase, Sparkles, Home, Info,
-  LogIn, UserPlus, ChevronRight, LogOut, GraduationCap,
+  LogIn, UserPlus, ChevronRight, LogOut, GraduationCap, Lock,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -21,8 +21,13 @@ const Navigation: React.FC = () => {
   const navLinks = [
     { name: t('nav.home'), path: '/', icon: <Home size={20} /> },
     { name: t('nav.browse'), path: '/browse', icon: <Briefcase size={20} /> },
-    { name: t('nav.smartmatch'), path: '/smartmatch', icon: <Sparkles size={20} /> },
-    { name: t('nav.scholarships'), path: '/scholarship-ledger', icon: <GraduationCap size={20} /> },
+    { name: t('nav.smartmatch'), path: '/smartmatch', icon: <Sparkles size={20} />, requiresAuth: true },
+    {
+      name: t('nav.scholarships'),
+      path: '/scholarship-ledger',
+      icon: <GraduationCap size={20} />,
+      requiresAuth: true,
+    },
     { name: t('nav.saved'), path: '/saved', icon: <Heart size={20} /> },
     { name: t('nav.applications'), path: '/applications', icon: <Briefcase size={20} /> },
     { name: t('nav.about'), path: '/about', icon: <Info size={20} /> },
@@ -68,27 +73,55 @@ const Navigation: React.FC = () => {
                 {t('nav.menu')}
               </p>
               <div className="flex flex-col gap-2">
-                {navLinks.map((link, index) => (
-                  <NavLink
-                    key={link.path}
-                    to={link.path}
-                    className={({ isActive }) => `
-                      group flex items-center justify-between p-4 rounded-2xl transition-all duration-300
-                      ${isActive ? 'bg-surface-elevated translate-x-4' : 'hover:bg-surface hover:translate-x-2'}
-                    `}
-                    style={{ transitionDelay: `${index * 50}ms` }}
-                  >
-                    <div className="flex items-center gap-6">
-                      <div className={`p-3 rounded-xl transition-colors ${location.pathname === link.path ? 'bg-primary text-white' : 'bg-surface text-text-muted group-hover:text-text'}`}>
-                        {link.icon}
+                {navLinks.map((link, index) => {
+                  const locked = link.requiresAuth && !isAuthenticated;
+
+                  if (locked) {
+                    return (
+                      <button
+                        key={link.path}
+                        type="button"
+                        onClick={() => {
+                          setIsOpen(false);
+                          openAuthModal('request');
+                        }}
+                        className="group flex items-center justify-between p-4 rounded-2xl transition-all duration-300 opacity-50 hover:opacity-80 cursor-not-allowed"
+                        style={{ transitionDelay: `${index * 50}ms` }}
+                        aria-label={`${link.name} — ${t('nav.signInToUnlock')}`}
+                      >
+                        <div className="flex items-center gap-6">
+                          <div className="p-3 rounded-xl bg-surface text-text-muted">{link.icon}</div>
+                          <span className="text-2xl font-bold tracking-tight text-text-secondary">
+                            {link.name}
+                          </span>
+                        </div>
+                        <Lock size={18} className="text-text-muted" />
+                      </button>
+                    );
+                  }
+
+                  return (
+                    <NavLink
+                      key={link.path}
+                      to={link.path}
+                      className={({ isActive }) => `
+                        group flex items-center justify-between p-4 rounded-2xl transition-all duration-300
+                        ${isActive ? 'bg-surface-elevated translate-x-4' : 'hover:bg-surface hover:translate-x-2'}
+                      `}
+                      style={{ transitionDelay: `${index * 50}ms` }}
+                    >
+                      <div className="flex items-center gap-6">
+                        <div className={`p-3 rounded-xl transition-colors ${location.pathname === link.path ? 'bg-primary text-white' : 'bg-surface text-text-muted group-hover:text-text'}`}>
+                          {link.icon}
+                        </div>
+                        <span className={`text-2xl font-bold tracking-tight ${location.pathname === link.path ? 'text-text' : 'text-text-secondary group-hover:text-text'}`}>
+                          {link.name}
+                        </span>
                       </div>
-                      <span className={`text-2xl font-bold tracking-tight ${location.pathname === link.path ? 'text-text' : 'text-text-secondary group-hover:text-text'}`}>
-                        {link.name}
-                      </span>
-                    </div>
-                    <ChevronRight size={20} className={`transition-all ${location.pathname === link.path ? 'text-primary opacity-100' : 'opacity-0 group-hover:opacity-40'}`} />
-                  </NavLink>
-                ))}
+                      <ChevronRight size={20} className={`transition-all ${location.pathname === link.path ? 'text-primary opacity-100' : 'opacity-0 group-hover:opacity-40'}`} />
+                    </NavLink>
+                  );
+                })}
               </div>
             </div>
 

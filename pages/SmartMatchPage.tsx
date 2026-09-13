@@ -8,7 +8,7 @@ import { api, type ApiCvAnalyze, type ApiMatchResult } from '../services/api';
 
 const SmartMatchPage: React.FC = () => {
   const { t } = useLanguage();
-  const { isAuthenticated, openAuthModal, accessToken } = useAuth();
+  const { accessToken } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [step, setStep] = useState(1);
@@ -48,10 +48,6 @@ const SmartMatchPage: React.FC = () => {
     setError(null);
 
     if (step === 1) {
-      if (!isAuthenticated) {
-        openAuthModal();
-        return;
-      }
       if (!selectedFile) {
         setError(t('smart.uploadRequired'));
         return;
@@ -70,10 +66,6 @@ const SmartMatchPage: React.FC = () => {
     }
 
     if (step === 3) {
-      if (!isAuthenticated) {
-        openAuthModal();
-        return;
-      }
       setIsProcessing(true);
       try {
         const matches = await api.runMatch(accessToken);
@@ -174,13 +166,7 @@ const SmartMatchPage: React.FC = () => {
               />
               <button
                 type="button"
-                onClick={() => {
-                  if (!isAuthenticated) {
-                    openAuthModal();
-                    return;
-                  }
-                  fileInputRef.current?.click();
-                }}
+                onClick={() => fileInputRef.current?.click()}
                 className={`w-full max-w-md border-2 border-dashed rounded-[32px] p-12 transition-all group flex flex-col items-center justify-center
                 ${fileName ? 'border-primary bg-primary-muted' : 'border-border hover:border-primary/50'}`}
               >

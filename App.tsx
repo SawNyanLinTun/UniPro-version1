@@ -91,8 +91,22 @@ const App: React.FC = () => {
               <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/browse" element={<BrowsePage />} />
-                <Route path="/smartmatch" element={<SmartMatchPage />} />
-                <Route path="/scholarship-ledger" element={<ScholarshipLedgerPage />} />
+                <Route
+                  path="/smartmatch"
+                  element={
+                    <ProtectedRoute>
+                      <SmartMatchPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/scholarship-ledger"
+                  element={
+                    <ProtectedRoute>
+                      <ScholarshipLedgerPage />
+                    </ProtectedRoute>
+                  }
+                />
                 <Route
                   path="/saved"
                   element={
