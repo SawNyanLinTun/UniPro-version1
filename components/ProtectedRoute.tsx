@@ -13,7 +13,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
         <p className="text-text-secondary text-sm mb-8">{t('common.signInRequiredBody')}</p>
         <button
           type="button"
-          onClick={openAuthModal}
+          onClick={() => openAuthModal('signin')}
           className="bg-primary text-white px-6 py-3 rounded-full text-sm font-semibold hover:opacity-90 transition-opacity"
         >
           {t('common.signIn')}

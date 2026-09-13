@@ -1,4 +1,4 @@
-import React, { FormEvent, useState } from 'react';
+import React, { FormEvent, useEffect, useState } from 'react';
 import { X, Mail, KeyRound, Lock, LogIn } from 'lucide-react';
 import { useAuth, type AuthRole } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -8,6 +8,7 @@ type Step = 'request' | 'otp' | 'password' | 'signin';
 const AuthModal: React.FC = () => {
   const {
     isAuthModalOpen,
+    authModalIntent,
     closeAuthModal,
     requestOtp,
     verifyOtp,
@@ -25,6 +26,15 @@ const AuthModal: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+
+  // Land on whichever screen the trigger asked for — "Sign in" opens straight
+  // to the password screen, "Create account" (or any other entry point) opens
+  // the get-a-code screen. Re-syncs every time the modal opens.
+  useEffect(() => {
+    if (isAuthModalOpen) {
+      setStep(authModalIntent);
+    }
+  }, [isAuthModalOpen, authModalIntent]);
 
   if (!isAuthModalOpen) return null;
 

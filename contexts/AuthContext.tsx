@@ -26,6 +26,10 @@ type RequestOtpInput = {
   role?: AuthRole;
 };
 
+/** Which screen the auth modal should open on. 'request' = get a code (new or returning
+ * user); 'signin' = returning user typing a password they already set. */
+export type AuthModalIntent = 'request' | 'signin';
+
 type AuthContextValue = {
   user: AuthUser | null;
   session: Session | null;
@@ -33,7 +37,8 @@ type AuthContextValue = {
   loading: boolean;
   isAuthenticated: boolean;
   isAuthModalOpen: boolean;
-  openAuthModal: () => void;
+  authModalIntent: AuthModalIntent;
+  openAuthModal: (intent?: AuthModalIntent) => void;
   closeAuthModal: () => void;
   /** Emails a one-time code. Creates the account on first use, signs an existing one in otherwise. */
   requestOtp: (input: RequestOtpInput) => Promise<void>;
@@ -72,6 +77,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authModalIntent, setAuthModalIntent] = useState<AuthModalIntent>('request');
 
   useEffect(() => {
     if (!supabase) {
@@ -162,7 +168,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       loading,
       isAuthenticated: !!session,
       isAuthModalOpen,
-      openAuthModal: () => setIsAuthModalOpen(true),
+      authModalIntent,
+      openAuthModal: (intent: AuthModalIntent = 'request') => {
+        setAuthModalIntent(intent);
+        setIsAuthModalOpen(true);
+      },
       closeAuthModal: () => setIsAuthModalOpen(false),
       requestOtp,
       verifyOtp,
@@ -175,6 +185,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       session,
       loading,
       isAuthModalOpen,
+      authModalIntent,
       requestOtp,
       verifyOtp,
       setPassword,

@@ -102,14 +102,14 @@ const Navigation: React.FC = () => {
                     <>
                       <button
                         type="button"
-                        onClick={openAuthModal}
+                        onClick={() => openAuthModal('signin')}
                         className="flex items-center justify-center gap-3 px-8 py-5 glass-card rounded-[24px] hover:bg-surface-hover transition-all font-mono text-[0.7rem] uppercase tracking-widest text-text active:scale-95"
                       >
                         <LogIn size={18} className="text-primary" /> {t('nav.signIn')}
                       </button>
                       <button
                         type="button"
-                        onClick={openAuthModal}
+                        onClick={() => openAuthModal('request')}
                         className="flex items-center justify-center gap-3 px-8 py-5 bg-text text-bg rounded-[24px] hover:bg-primary hover:text-white transition-all font-mono text-[0.7rem] font-bold uppercase tracking-widest active:scale-95"
                       >
                         <UserPlus size={18} /> {t('nav.createAccount')}
