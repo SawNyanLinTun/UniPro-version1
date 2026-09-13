@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import {
-  ListOrdered, CheckCircle2, FileText, Share2, Sparkles, ChevronRight, Loader2, Copy, Upload,
+  ListOrdered, CheckCircle2, FileText, Sigma, Sparkles, ChevronRight, Loader2, Upload,
 } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -27,7 +27,7 @@ const SmartMatchPage: React.FC = () => {
 
   const steps = [
     { num: 1, label: t('smart.step1'), icon: <FileText size={20} /> },
-    { num: 2, label: t('smart.step2'), icon: <Share2 size={20} /> },
+    { num: 2, label: t('smart.step2'), icon: <Sigma size={20} /> },
     { num: 3, label: t('smart.step3'), icon: <ListOrdered size={20} /> },
     { num: 4, label: t('smart.step4'), icon: <CheckCircle2 size={20} /> },
   ];
@@ -84,11 +84,6 @@ const SmartMatchPage: React.FC = () => {
       setIsProcessing(false);
       setStep((s) => Math.min(4, s + 1));
     }, 400);
-  };
-
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText('unipro.co.th/eval/auth-882-991');
-    alert(t('smart.copyAlert'));
   };
 
   const displayMatches =
@@ -193,8 +188,12 @@ const SmartMatchPage: React.FC = () => {
 
           {step === 2 && (
             <div className="animate-[fadeIn_0.3s]">
-              <h3 className="text-2xl font-bold mb-6 font-display">{t('smart.evalTitle')}</h3>
-              <p className="text-text-secondary mb-10">{t('smart.evalBody')}</p>
+              <h3 className="text-2xl font-bold mb-6 font-display">{t('smart.formulaTitle')}</h3>
+              <p className="text-text-secondary mb-10">
+                {t('smart.formulaBody')
+                  .replace('{skills}', String(analyzeResult?.skills.length ?? 0))
+                  .replace('{dims}', String(analyzeResult?.embedding_dims ?? 0))}
+              </p>
               {analyzeResult && (
                 <div className="mb-8 p-5 glass-card rounded-2xl text-left">
                   <p className="text-[0.6rem] font-mono uppercase tracking-widest text-text-muted mb-3">
@@ -216,23 +215,34 @@ const SmartMatchPage: React.FC = () => {
                   <p className="mt-4 text-xs text-text-muted font-mono">{t('smart.privacyNote')}</p>
                 </div>
               )}
-              <div className="glass-input p-4 rounded-2xl flex items-center justify-between mb-10 gap-4">
-                <code className="text-xs text-primary overflow-hidden whitespace-nowrap">
-                  unipro.co.th/eval/auth-882-991
-                </code>
-                <button
-                  type="button"
-                  onClick={handleCopyLink}
-                  className="flex items-center gap-2 text-[0.6rem] font-mono bg-text text-bg px-4 py-2 rounded-lg hover:bg-primary hover:text-white transition-colors shrink-0"
-                >
-                  <Copy size={12} /> {t('smart.copyLink')}
-                </button>
+              <div className="space-y-4 mb-10">
+                <div className="glass-input p-4 rounded-2xl">
+                  <p className="text-[0.6rem] font-mono uppercase tracking-widest text-text-muted mb-2">
+                    {t('smart.hscrLabel')}
+                  </p>
+                  <code className="block text-xs text-primary mb-2">{t('smart.hscrFormula')}</code>
+                  <p className="text-sm text-text-secondary">{t('smart.hscrBody')}</p>
+                </div>
+                <div className="glass-input p-4 rounded-2xl">
+                  <p className="text-[0.6rem] font-mono uppercase tracking-widest text-text-muted mb-2">
+                    {t('smart.sgiLabel')}
+                  </p>
+                  <code className="block text-xs text-primary mb-2">{t('smart.sgiFormula')}</code>
+                  <p className="text-sm text-text-secondary">{t('smart.sgiBody')}</p>
+                </div>
+                <div className="glass-input p-4 rounded-2xl">
+                  <p className="text-[0.6rem] font-mono uppercase tracking-widest text-text-muted mb-2">
+                    {t('smart.sssaLabel')}
+                  </p>
+                  <code className="block text-xs text-primary mb-2">{t('smart.sssaFormula')}</code>
+                  <p className="text-sm text-text-secondary">{t('smart.sssaBody')}</p>
+                </div>
               </div>
               <div className="p-6 bg-resin-purple/5 border border-resin-purple/20 rounded-[24px]">
                 <p className="text-xs text-resin-purple uppercase font-mono tracking-widest mb-2">
-                  {t('smart.whyTitle')}
+                  {t('smart.formulaScoreTitle')}
                 </p>
-                <p className="text-sm text-text-secondary">{t('smart.whyBody')}</p>
+                <p className="text-sm text-text-secondary">{t('smart.formulaScoreBody')}</p>
               </div>
             </div>
           )}

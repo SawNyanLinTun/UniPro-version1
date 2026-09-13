@@ -118,7 +118,7 @@ const en = {
   'smart.subtitle':
     'Complete our 4-step workflow to unlock precise internship alignments tailored to your unique profile.',
   'smart.step1': 'CV Upload',
-  'smart.step2': 'Evaluation',
+  'smart.step2': 'Match Formula',
   'smart.step3': 'Preferences',
   'smart.step4': 'Match Results',
   'smart.processing': 'Synthesizing Data...',
@@ -135,14 +135,22 @@ const en = {
   'smart.extractedSkills': 'Extracted skills',
   'smart.noSkills': 'No skills detected yet',
   'smart.privacyNote': 'Your CV file was discarded after analysis. Only skills and the embedding vector are kept.',
-  'smart.evalTitle': 'Academic Endorsement',
-  'smart.evalBody':
-    'Generate a secure evaluation link for your professor or mentor. Their insights account for 30% of your total match score.',
-  'smart.copyLink': 'COPY LINK',
-  'smart.copyAlert': 'Evaluation link copied!',
-  'smart.whyTitle': 'Why this matters',
-  'smart.whyBody':
-    "Stable matching requires qualitative data. A mentor's rating on work ethic and communication bridges the gap between code and career.",
+  'smart.formulaTitle': 'How Your Match Score Works',
+  'smart.formulaBody':
+    'You have {skills} skills and a {dims}-dimension profile vector. Every internship score below is built from three transparent formulas — no professor ratings, no hidden inputs.',
+  'smart.hscrLabel': 'HARD SKILL COVERAGE — HSCR',
+  'smart.hscrFormula': 'HSCR = |your skills ∩ required skills| / |required skills|',
+  'smart.hscrBody': "The fraction of a role's required skills you already have.",
+  'smart.sgiLabel': 'SKILL GAP — SGI',
+  'smart.sgiFormula': 'SGI = 1 − HSCR',
+  'smart.sgiBody': 'The mirror of coverage — how much ground is left to close, not how much you have.',
+  'smart.sssaLabel': 'SEMANTIC ALIGNMENT — SSSA',
+  'smart.sssaFormula': "SSSA = cosine similarity(your CV vector, the role's skill vector)",
+  'smart.sssaBody':
+    "How closely your whole profile reads like the role — catching related skills that don't match keyword-for-keyword.",
+  'smart.formulaScoreTitle': 'Your displayed match score',
+  'smart.formulaScoreBody':
+    "Score = ((HSCR + SSSA) / 2) × 100%, calculated fresh for every internship in step 4. SGI isn't shown separately — it's just the inverse of HSCR, already baked into the formula.",
   'smart.rankTitle': 'Rank your Ambitions',
   'smart.rankBody':
     "Based on initial processing, we've identified these top matches. Drag to rank them by your preference.",
@@ -327,7 +335,7 @@ const th: Record<TranslationKey, string> = {
   'smart.subtitle':
     'ทำตามเวิร์กโฟลว์ 4 ขั้นตอนเพื่อปลดล็อกการจับคู่ฝึกงานที่เหมาะกับโปรไฟล์ของคุณ',
   'smart.step1': 'อัปโหลด CV',
-  'smart.step2': 'การประเมิน',
+  'smart.step2': 'สูตรจับคู่',
   'smart.step3': 'ความชอบ',
   'smart.step4': 'ผลการจับคู่',
   'smart.processing': 'กำลังประมวลผลข้อมูล...',
@@ -344,14 +352,21 @@ const th: Record<TranslationKey, string> = {
   'smart.extractedSkills': 'ทักษะที่สกัดได้',
   'smart.noSkills': 'ยังไม่พบทักษะ',
   'smart.privacyNote': 'ไฟล์ CV ถูกลบหลังวิเคราะห์ เก็บเฉพาะทักษะและเวกเตอร์',
-  'smart.evalTitle': 'การรับรองทางวิชาการ',
-  'smart.evalBody':
-    'สร้างลิงก์ประเมินที่ปลอดภัยให้อาจารย์หรือพี่เลี้ยง ความเห็นของพวกเขามีน้ำหนัก 30% ของคะแนนจับคู่ทั้งหมด',
-  'smart.copyLink': 'คัดลอกลิงก์',
-  'smart.copyAlert': 'คัดลอกลิงก์ประเมินแล้ว!',
-  'smart.whyTitle': 'ทำไมถึงสำคัญ',
-  'smart.whyBody':
-    'Stable matching ต้องการข้อมูลเชิงคุณภาพ การให้คะแนนเรื่องจริยธรรมการทำงานและการสื่อสารช่วยเชื่อมช่องว่างระหว่างสกิลกับอาชีพ',
+  'smart.formulaTitle': 'คะแนนจับคู่ของคุณคำนวณอย่างไร',
+  'smart.formulaBody':
+    'คุณมีทักษะ {skills} รายการ และเวกเตอร์โปรไฟล์ {dims} มิติ คะแนนของทุกตำแหน่งฝึกงานด้านล่างคำนวณจากสูตรที่โปร่งใส 3 สูตร — ไม่มีคะแนนจากอาจารย์ ไม่มีปัจจัยที่ซ่อนอยู่',
+  'smart.hscrLabel': 'ความครอบคลุมทักษะหลัก — HSCR',
+  'smart.hscrFormula': 'HSCR = |your skills ∩ required skills| / |required skills|',
+  'smart.hscrBody': 'สัดส่วนทักษะที่ตำแหน่งต้องการซึ่งคุณมีอยู่แล้ว',
+  'smart.sgiLabel': 'ช่องว่างทักษะ — SGI',
+  'smart.sgiFormula': 'SGI = 1 − HSCR',
+  'smart.sgiBody': 'มุมกลับของความครอบคลุม บอกว่ายังขาดอะไรอีกเท่าไหร่ ไม่ใช่ว่ามีเท่าไหร่',
+  'smart.sssaLabel': 'ความใกล้เคียงเชิงความหมาย — SSSA',
+  'smart.sssaFormula': "SSSA = cosine similarity(your CV vector, the role's skill vector)",
+  'smart.sssaBody': 'โปรไฟล์ของคุณใกล้เคียงกับตำแหน่งนี้แค่ไหนในเชิงความหมาย แม้คำจะไม่ตรงกันเป๊ะๆ',
+  'smart.formulaScoreTitle': 'คะแนนจับคู่ที่คุณเห็น',
+  'smart.formulaScoreBody':
+    'คะแนน = ((HSCR + SSSA) / 2) × 100% คำนวณใหม่ทุกครั้งสำหรับแต่ละตำแหน่งในขั้นตอนที่ 4 ส่วน SGI ไม่แสดงแยกต่างหาก เพราะเป็นเพียงค่าผกผันของ HSCR ที่รวมอยู่ในสูตรแล้ว',
   'smart.rankTitle': 'จัดอันดับเป้าหมายของคุณ',
   'smart.rankBody':
     'จากการประมวลผลเบื้องต้น เราพบตำแหน่งที่ตรงที่สุด ลากเพื่อจัดอันดับตามความชอบของคุณ',
