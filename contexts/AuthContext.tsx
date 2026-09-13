@@ -37,7 +37,10 @@ type AuthContextValue = {
   closeAuthModal: () => void;
   /** Emails a one-time code. Creates the account on first use, signs an existing one in otherwise. */
   requestOtp: (input: RequestOtpInput) => Promise<void>;
+  /** Verifies the code and signs the user in. Leaves the modal open so it can offer setPassword next. */
   verifyOtp: (email: string, code: string) => Promise<void>;
+  /** Sets a password on the now-signed-in account, so future logins don't need a fresh email code. */
+  setPassword: (password: string) => Promise<void>;
   signOut: () => Promise<void>;
 };
 
@@ -119,7 +122,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
     if (error) throw error;
     setSession(data.session);
-    setIsAuthModalOpen(false);
+    // Modal stays open — AuthModal moves to its own "set a password" step next.
+  }, []);
+
+  const setPassword = useCallback(async (password: string) => {
+    const client = requireSupabase();
+    const { error } = await client.auth.updateUser({ password });
+    if (error) throw error;
   }, []);
 
   const signOut = useCallback(async () => {
@@ -145,9 +154,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       closeAuthModal: () => setIsAuthModalOpen(false),
       requestOtp,
       verifyOtp,
+      setPassword,
       signOut,
     }),
-    [user, session, loading, isAuthModalOpen, requestOtp, verifyOtp, signOut]
+    [user, session, loading, isAuthModalOpen, requestOtp, verifyOtp, setPassword, signOut]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
