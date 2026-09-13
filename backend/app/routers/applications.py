@@ -23,9 +23,12 @@ def _to_out(app: Application) -> ApplicationOut:
     internship = app.internship
     company = internship.company.company_name if internship and internship.company else ""
     role = internship.title if internship else ""
+    student_name = app.student.user.full_name if app.student and app.student.user else None
     return ApplicationOut(
         id=str(app.application_id),
         internshipId=str(app.internship_id),
+        studentId=str(app.student_id),
+        studentName=student_name,
         role=role,
         company=company,
         status=app.status,
@@ -72,7 +75,10 @@ def create_application(
     app = db.scalar(
         select(Application)
         .where(Application.application_id == app.application_id)
-        .options(joinedload(Application.internship).joinedload(Internship.company))
+        .options(
+            joinedload(Application.internship).joinedload(Internship.company),
+            joinedload(Application.student).joinedload(Student.user),
+        )
     )
     assert app is not None
     return _to_out(app)
@@ -83,11 +89,16 @@ def list_applications(
     user: Annotated[User, Depends(get_current_user)],
     db: Annotated[Session, Depends(get_db)],
 ) -> list[ApplicationOut]:
-    q = select(Application).options(joinedload(Application.internship).joinedload(Internship.company))
+    q = select(Application).options(
+        joinedload(Application.internship).joinedload(Internship.company),
+        joinedload(Application.student).joinedload(Student.user),
+    )
     if user.role == UserRole.student:
         q = q.where(Application.student_id == user.user_id)
+    elif user.role == UserRole.company:
+        q = q.join(Internship).where(Internship.company_id == user.user_id)
     elif user.role != UserRole.admin:
-        raise HTTPException(status_code=403, detail="Students or admins only")
+        raise HTTPException(status_code=403, detail="Students, companies, or admins only")
 
     rows = db.scalars(q.order_by(Application.applied_at.desc())).unique().all()
     return [_to_out(r) for r in rows]
@@ -97,19 +108,24 @@ def list_applications(
 def update_application(
     application_id: UUID,
     body: ApplicationUpdate,
-    user: Annotated[User, Depends(require_roles(UserRole.student, UserRole.admin))],
+    user: Annotated[User, Depends(require_roles(UserRole.student, UserRole.company, UserRole.admin))],
     db: Annotated[Session, Depends(get_db)],
 ) -> ApplicationOut:
     app = db.scalar(
         select(Application)
         .where(Application.application_id == application_id)
-        .options(joinedload(Application.internship).joinedload(Internship.company))
+        .options(
+            joinedload(Application.internship).joinedload(Internship.company),
+            joinedload(Application.student).joinedload(Student.user),
+        )
     )
     if app is None:
         raise HTTPException(status_code=404, detail="Application not found")
 
     if user.role == UserRole.student and app.student_id != user.user_id:
         raise HTTPException(status_code=403, detail="Not your application")
+    if user.role == UserRole.company and (app.internship is None or app.internship.company_id != user.user_id):
+        raise HTTPException(status_code=403, detail="Not your internship")
 
     app.status = body.status
     db.commit()

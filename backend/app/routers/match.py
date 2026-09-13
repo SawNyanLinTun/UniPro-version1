@@ -11,7 +11,7 @@ from app.database import get_db
 from app.embeddings import embed_text
 from app.matching import compute_match
 from app.models import Internship, InternshipSkill, InternshipStatus, Match, Student, StudentSkill, User, UserRole
-from app.schemas import MatchRequest, MatchResultOut
+from app.schemas import CandidateMatchOut, MatchRequest, MatchResultOut
 
 router = APIRouter(tags=["match"])
 
@@ -126,6 +126,82 @@ def run_match(
 
     db.commit()
     results.sort(key=lambda m: (m.hscr + m.sssa) / 2, reverse=True)
+    return results
+
+
+@router.get("/jobs/{internship_id}/candidates", response_model=list[CandidateMatchOut])
+def list_candidates(
+    internship_id: UUID,
+    user: Annotated[User, Depends(require_roles(UserRole.company))],
+    db: Annotated[Session, Depends(get_db)],
+) -> list[CandidateMatchOut]:
+    """The company-facing counterpart to /match: rank every student against one posting."""
+    internship = db.get(Internship, internship_id)
+    if internship is None:
+        raise HTTPException(status_code=404, detail="Internship not found")
+    if internship.company_id != user.user_id:
+        raise HTTPException(status_code=403, detail="Not your internship")
+
+    required = _internship_skill_ids(db, internship_id)
+    required_embedding = _ensure_internship_embedding(db, internship, required)
+
+    students = db.scalars(select(Student).options(joinedload(Student.user))).unique().all()
+    now = datetime.now(timezone.utc)
+    results: list[CandidateMatchOut] = []
+
+    for student in students:
+        candidate_skills = _student_skill_ids(db, student.user_id)
+        if not candidate_skills and not student.skills_embedding:
+            continue  # no CV data on file yet — nothing to compare
+
+        scores = compute_match(
+            required,
+            candidate_skills,
+            required_embedding=required_embedding,
+            candidate_embedding=student.skills_embedding,
+        )
+
+        existing = db.scalar(
+            select(Match).where(Match.student_id == student.user_id, Match.internship_id == internship_id)
+        )
+        if existing:
+            existing.hscr = scores.hscr
+            existing.sgi = scores.sgi
+            existing.sssa = scores.sssa
+            existing.matched_skills = scores.matched_skills
+            existing.missing_skills = scores.missing_skills
+            existing.calculated_at = now
+        else:
+            db.add(
+                Match(
+                    student_id=student.user_id,
+                    internship_id=internship_id,
+                    hscr=scores.hscr,
+                    sgi=scores.sgi,
+                    sssa=scores.sssa,
+                    matched_skills=scores.matched_skills,
+                    missing_skills=scores.missing_skills,
+                    calculated_at=now,
+                )
+            )
+
+        results.append(
+            CandidateMatchOut(
+                studentId=str(student.user_id),
+                fullName=student.user.full_name if student.user else "",
+                university=student.university,
+                major=student.major,
+                graduationYear=student.graduation_year,
+                hscr=scores.hscr,
+                sgi=scores.sgi,
+                sssa=scores.sssa,
+                matchedSkills=scores.matched_skills,
+                missingSkills=scores.missing_skills,
+            )
+        )
+
+    db.commit()
+    results.sort(key=lambda r: (r.hscr + r.sssa) / 2, reverse=True)
     return results
 
 

@@ -1,8 +1,9 @@
 import uuid
+from datetime import date
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
-from app.models import ApplicationStatus, UserRole, WorkType
+from app.models import ApplicationStatus, InternshipStatus, UserRole, WorkType
 
 
 class JobOut(BaseModel):
@@ -49,11 +50,66 @@ class ApplicationUpdate(BaseModel):
 class ApplicationOut(BaseModel):
     id: str
     internshipId: str
+    studentId: str
+    studentName: str | None = None
     role: str
     company: str
     status: ApplicationStatus
     appliedDate: str
     recordHash: str | None = None
+
+
+class CompanyProfileUpdate(BaseModel):
+    company_name: str
+    industry: str | None = None
+
+
+class CompanyMeOut(BaseModel):
+    user_id: uuid.UUID
+    email: EmailStr
+    full_name: str
+    role: UserRole
+    company_name: str | None = None
+    industry: str | None = None
+    verification_status: bool = False
+
+
+class InternshipCreate(BaseModel):
+    title: str
+    description: str
+    location: str
+    work_type: WorkType
+    duration: str
+    category: str
+    stipend: str
+    deadline: date
+    tags: list[str] = Field(default_factory=list)
+
+
+class InternshipUpdate(BaseModel):
+    title: str | None = None
+    description: str | None = None
+    location: str | None = None
+    work_type: WorkType | None = None
+    duration: str | None = None
+    category: str | None = None
+    stipend: str | None = None
+    deadline: date | None = None
+    tags: list[str] | None = None
+    status: InternshipStatus | None = None
+
+
+class CandidateMatchOut(BaseModel):
+    studentId: str
+    fullName: str
+    university: str | None = None
+    major: str | None = None
+    graduationYear: int | None = None
+    hscr: float
+    sgi: float
+    sssa: float
+    matchedSkills: list[str]
+    missingSkills: list[str]
 
 
 class CvExtractTextBody(BaseModel):
