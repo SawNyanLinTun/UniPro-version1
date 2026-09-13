@@ -41,6 +41,8 @@ type AuthContextValue = {
   verifyOtp: (email: string, code: string) => Promise<void>;
   /** Sets a password on the now-signed-in account, so future logins don't need a fresh email code. */
   setPassword: (password: string) => Promise<void>;
+  /** For returning users who set a password — skips the email code entirely. */
+  signInWithPassword: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
 };
 
@@ -131,6 +133,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (error) throw error;
   }, []);
 
+  const signInWithPassword = useCallback(async (email: string, password: string) => {
+    const client = requireSupabase();
+    const { data, error } = await client.auth.signInWithPassword({
+      email: email.trim().toLowerCase(),
+      password,
+    });
+    if (error) throw error;
+    setSession(data.session);
+  }, []);
+
   const signOut = useCallback(async () => {
     if (!supabase) {
       setSession(null);
@@ -155,9 +167,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       requestOtp,
       verifyOtp,
       setPassword,
+      signInWithPassword,
       signOut,
     }),
-    [user, session, loading, isAuthModalOpen, requestOtp, verifyOtp, setPassword, signOut]
+    [
+      user,
+      session,
+      loading,
+      isAuthModalOpen,
+      requestOtp,
+      verifyOtp,
+      setPassword,
+      signInWithPassword,
+      signOut,
+    ]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

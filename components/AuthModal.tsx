@@ -1,12 +1,19 @@
 import React, { FormEvent, useState } from 'react';
-import { X, Mail, KeyRound, Lock } from 'lucide-react';
+import { X, Mail, KeyRound, Lock, LogIn } from 'lucide-react';
 import { useAuth, type AuthRole } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 
-type Step = 'request' | 'otp' | 'password';
+type Step = 'request' | 'otp' | 'password' | 'signin';
 
 const AuthModal: React.FC = () => {
-  const { isAuthModalOpen, closeAuthModal, requestOtp, verifyOtp, setPassword } = useAuth();
+  const {
+    isAuthModalOpen,
+    closeAuthModal,
+    requestOtp,
+    verifyOtp,
+    setPassword,
+    signInWithPassword,
+  } = useAuth();
   const { t } = useLanguage();
 
   const [step, setStep] = useState<Step>('request');
@@ -49,6 +56,18 @@ const AuthModal: React.FC = () => {
     closeAuthModal();
   };
 
+  const switchToSignIn = () => {
+    resetMessages();
+    resetFields();
+    setStep('signin');
+  };
+
+  const switchToCode = () => {
+    resetMessages();
+    resetFields();
+    setStep('request');
+  };
+
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
     resetMessages();
@@ -60,11 +79,14 @@ const AuthModal: React.FC = () => {
       } else if (step === 'otp') {
         await verifyOtp(email, otp);
         setStep('password');
-      } else {
+      } else if (step === 'password') {
         if (password !== confirmPassword) {
           throw new Error(t('auth.passwordMismatch'));
         }
         await setPassword(password);
+        handleClose();
+      } else {
+        await signInWithPassword(email, password);
         handleClose();
       }
     } catch (err) {
@@ -87,7 +109,13 @@ const AuthModal: React.FC = () => {
   };
 
   const subtitle =
-    step === 'otp' ? t('auth.otpSubtitle') : step === 'password' ? t('auth.passwordSubtitle') : t('auth.subtitle');
+    step === 'otp'
+      ? t('auth.otpSubtitle')
+      : step === 'password'
+        ? t('auth.passwordSubtitle')
+        : step === 'signin'
+          ? t('auth.signInSubtitle')
+          : t('auth.subtitle');
 
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center px-4">
@@ -139,6 +167,34 @@ const AuthModal: React.FC = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full rounded-xl border border-border bg-surface px-4 py-3 text-sm text-text"
                   autoComplete="email"
+                />
+              </label>
+            </>
+          )}
+
+          {step === 'signin' && (
+            <>
+              <label className="grid gap-1 text-xs text-text-muted">
+                {t('auth.email')}
+                <input
+                  type="email"
+                  required
+                  autoFocus
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full rounded-xl border border-border bg-surface px-4 py-3 text-sm text-text"
+                  autoComplete="email"
+                />
+              </label>
+              <label className="grid gap-1 text-xs text-text-muted">
+                {t('auth.password')}
+                <input
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPasswordValue(e.target.value)}
+                  className="w-full rounded-xl border border-border bg-surface px-4 py-3 text-sm text-text"
+                  autoComplete="current-password"
                 />
               </label>
             </>
@@ -222,8 +278,21 @@ const AuthModal: React.FC = () => {
                 <Lock size={16} /> {busy ? t('auth.working') : t('auth.setPassword')}
               </>
             )}
+            {step === 'signin' && (
+              <>
+                <LogIn size={16} /> {busy ? t('auth.working') : t('common.signIn')}
+              </>
+            )}
           </button>
         </form>
+
+        {step === 'request' && (
+          <div className="mt-4 text-center text-sm text-text-secondary">
+            <button type="button" className="underline hover:text-text" onClick={switchToSignIn}>
+              {t('auth.havePassword')}
+            </button>
+          </div>
+        )}
 
         {step === 'otp' && (
           <div className="mt-4 flex items-center justify-between text-sm text-text-secondary">
@@ -240,6 +309,14 @@ const AuthModal: React.FC = () => {
           <div className="mt-4 text-center text-sm text-text-secondary">
             <button type="button" className="underline hover:text-text" onClick={skipPassword} disabled={busy}>
               {t('auth.skipForNow')}
+            </button>
+          </div>
+        )}
+
+        {step === 'signin' && (
+          <div className="mt-4 text-center text-sm text-text-secondary">
+            <button type="button" className="underline hover:text-text" onClick={switchToCode}>
+              {t('auth.useCodeInstead')}
             </button>
           </div>
         )}
