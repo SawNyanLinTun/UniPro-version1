@@ -2,8 +2,8 @@
 
 REST API for internship listings, SmartMatch KPIs, CV extract, applications, and auth.
 
-Authentication is **Supabase Email OTP**. Passwords are hashed and stored only in
-Supabase `auth.users`. This API validates Supabase access tokens and reads the
+Authentication is **Supabase Email OTP** — passwordless, no password field exists
+anywhere in the flow. This API validates Supabase access tokens and reads the
 public `users` profile table (id, email, role — never a password).
 
 ## Structure
@@ -91,9 +91,12 @@ Use only for offline listing seed. For real login, use Supabase Auth + set `DATA
 
 ## Auth flow
 
-1. Frontend `supabase.auth.signUp({ email, password, options: { data: { role, full_name } } })`
-2. Trigger inserts `public.users` with the same UUID
-3. User enters the 6-digit email OTP → `verifyOtp({ type: 'signup' })` → session
+Passwordless — there is no password anywhere in this flow.
+
+1. Frontend `supabase.auth.signInWithOtp({ email, options: { shouldCreateUser: true, data: { role, full_name } } })`.
+   Creates the account on first use, emails a fresh 6-digit code on every use (new or returning).
+2. Trigger inserts `public.users` with the same UUID (metadata only applies on that first creation)
+3. User enters the 6-digit email OTP → `verifyOtp({ type: 'email' })` → session
 4. Frontend calls `GET /auth/me` with `Authorization: Bearer <access_token>`
 5. FastAPI verifies the JWT with the project JWT secret (`aud=authenticated`) and loads `public.users` by `sub`
 

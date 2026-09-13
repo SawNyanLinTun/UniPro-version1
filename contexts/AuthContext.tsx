@@ -20,9 +20,8 @@ export type AuthUser = {
   university?: string;
 };
 
-type SignUpInput = {
+type RequestOtpInput = {
   email: string;
-  password: string;
   fullName: string;
   role?: AuthRole;
 };
@@ -36,9 +35,9 @@ type AuthContextValue = {
   isAuthModalOpen: boolean;
   openAuthModal: () => void;
   closeAuthModal: () => void;
-  signUp: (input: SignUpInput) => Promise<void>;
-  verifySignupOtp: (email: string, code: string) => Promise<void>;
-  signInWithPassword: (email: string, password: string) => Promise<void>;
+  /** Emails a one-time code. Creates the account on first use, signs an existing one in otherwise. */
+  requestOtp: (input: RequestOtpInput) => Promise<void>;
+  verifyOtp: (email: string, code: string) => Promise<void>;
   signOut: () => Promise<void>;
 };
 
@@ -93,12 +92,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, []);
 
-  const signUp = useCallback(async ({ email, password, fullName, role = 'student' }: SignUpInput) => {
+  const requestOtp = useCallback(async ({ email, fullName, role = 'student' }: RequestOtpInput) => {
     const client = requireSupabase();
-    const { error } = await client.auth.signUp({
+    // shouldCreateUser: true means this one call covers both signup and sign-in —
+    // the metadata below only ever lands on a brand-new account; Supabase leaves
+    // an existing user's metadata untouched.
+    const { error } = await client.auth.signInWithOtp({
       email: email.trim().toLowerCase(),
-      password,
       options: {
+        shouldCreateUser: true,
         data: {
           role,
           full_name: fullName.trim(),
@@ -108,23 +110,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (error) throw error;
   }, []);
 
-  const verifySignupOtp = useCallback(async (email: string, code: string) => {
+  const verifyOtp = useCallback(async (email: string, code: string) => {
     const client = requireSupabase();
     const { data, error } = await client.auth.verifyOtp({
       email: email.trim().toLowerCase(),
       token: code.trim(),
-      type: 'signup',
-    });
-    if (error) throw error;
-    setSession(data.session);
-    setIsAuthModalOpen(false);
-  }, []);
-
-  const signInWithPassword = useCallback(async (email: string, password: string) => {
-    const client = requireSupabase();
-    const { data, error } = await client.auth.signInWithPassword({
-      email: email.trim().toLowerCase(),
-      password,
+      type: 'email',
     });
     if (error) throw error;
     setSession(data.session);
@@ -152,21 +143,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       isAuthModalOpen,
       openAuthModal: () => setIsAuthModalOpen(true),
       closeAuthModal: () => setIsAuthModalOpen(false),
-      signUp,
-      verifySignupOtp,
-      signInWithPassword,
+      requestOtp,
+      verifyOtp,
       signOut,
     }),
-    [
-      user,
-      session,
-      loading,
-      isAuthModalOpen,
-      signUp,
-      verifySignupOtp,
-      signInWithPassword,
-      signOut,
-    ]
+    [user, session, loading, isAuthModalOpen, requestOtp, verifyOtp, signOut]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
