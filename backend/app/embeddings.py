@@ -8,8 +8,12 @@ import urllib.request
 
 from app.config import get_settings
 
-# text-embedding-004 output size (Google Generative Language API)
-EMBEDDING_MODEL = "text-embedding-004"
+# text-embedding-004 was shut down; gemini-embedding-001 is its replacement.
+# 768 dims (vs. the model's 3072 default) — Google's own guidance is ~0.26%
+# quality loss for 75% less storage, and it keeps vector size in line with
+# what this schema was already built around.
+EMBEDDING_MODEL = "gemini-embedding-001"
+EMBEDDING_DIMS = 768
 
 
 def embed_text(text: str) -> list[float] | None:
@@ -29,6 +33,8 @@ def embed_text(text: str) -> list[float] | None:
         {
             "model": f"models/{EMBEDDING_MODEL}",
             "content": {"parts": [{"text": cleaned[:8000]}]},
+            "taskType": "SEMANTIC_SIMILARITY",
+            "outputDimensionality": EMBEDDING_DIMS,
         }
     ).encode("utf-8")
     req = urllib.request.Request(

@@ -98,7 +98,7 @@ def _gemini_extract(text: str) -> CvExtractResultOut | None:
 
         url = (
             "https://generativelanguage.googleapis.com/v1beta/models/"
-            f"gemini-1.5-flash:generateContent?key={settings.gemini_api_key}"
+            f"gemini-3.1-flash-lite:generateContent?key={settings.gemini_api_key}"
         )
         prompt = (
             "Extract from this CV as JSON with keys skills (list of lowercase skill ids), "
