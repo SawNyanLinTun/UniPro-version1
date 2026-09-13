@@ -1,0 +1,8 @@
+# Cloudflare Pages config for the UniPro frontend (Vite/React SPA).
+# Used by `wrangler pages deploy` and picked up by the Pages dashboard's
+# Git integration for build settings.
+name = "unipro"
+pages_build_output_dir = "dist"
+
+[build]
+command = "npm run build"
