@@ -22,7 +22,12 @@ internship browse/apply flows, saved jobs, and a scholarship ledger UI.
 
 **Backend:** FastAPI · Uvicorn · SQLAlchemy 2 · PostgreSQL (Supabase) · python-jose · pypdf · Gemini embeddings 
 
-**Infra:** Supabase (Auth + Postgres) · Docker / docker-compose · Railway (`api` + `web`) · nginx for production web
+**Infra:** Supabase (Auth + Postgres) · Docker / docker-compose · Railway (`api`) · Cloudflare Pages or nginx (`web`)
+
+## Deploying
+
+- **Frontend (Cloudflare Pages):** see [`CLOUDFLARE.md`](CLOUDFLARE.md).
+- **Backend + Docker/Railway alternative for the frontend:** see [`RAILWAY.md`](RAILWAY.md).
 
 
 

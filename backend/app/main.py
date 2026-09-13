@@ -7,7 +7,7 @@ from fastapi.responses import JSONResponse
 
 from app.config import get_settings
 from app.database import SessionLocal, init_db
-from app.routers import applications, auth, cv, jobs, match, saved
+from app.routers import applications, auth, companies, cv, jobs, match, saved
 from app.seed import seed_if_empty
 
 settings = get_settings()
@@ -37,6 +37,7 @@ app.add_middleware(
 )
 
 app.include_router(auth.router)
+app.include_router(companies.router)
 app.include_router(jobs.router)
 app.include_router(match.router)
 app.include_router(applications.router)
