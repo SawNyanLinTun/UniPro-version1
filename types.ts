@@ -87,39 +87,6 @@ export interface CvExtractResult {
   experience: string[];
 }
 
-/** Scholarship Ledger track categories. */
-export type ScholarshipTrack = 'web_development' | 'accounting' | 'engineering';
-
-/** On-chain style alumni record (hashed identity; frontend mock for now). */
-export interface ScholarshipAlumni {
-  id: string;
-  track: ScholarshipTrack;
-  /** Masked display name for UI (e.g. "S****k T."). */
-  maskedName: string;
-  /** SHA-256-style hash of the real student name. */
-  nameHash: string;
-  /** Short company label shown in UI. */
-  companyLabel: string;
-  /** SHA-256-style hash of company name. */
-  companyHash: string;
-  scholarshipYear: number;
-  role: string;
-  /** Skill tags used for demo CV coverage scoring. */
-  skills: SkillId[];
-  /** Alumni radar baseline (0–100 per axis). */
-  radar: CvRadarScores;
-}
-
-/** Six-axis CV coverage scores for radar compare (0–100). */
-export interface CvRadarScores {
-  technicalSkills: number;
-  experienceDepth: number;
-  projects: number;
-  softSkills: number;
-  academicStrength: number;
-  toolsStack: number;
-}
-
 export interface TokenWallet {
   balance: number;
 }

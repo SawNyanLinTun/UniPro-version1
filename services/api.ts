@@ -129,6 +129,18 @@ export type ApiCertificateVerify = {
   revokeReason?: string | null;
 };
 
+export type ApiCertificatePublic = {
+  id: string;
+  maskedName: string;
+  company: string;
+  companyVerified: boolean;
+  role: string;
+  category: string;
+  skills: ApiCertificateSkill[];
+  issuedAt?: string | null;
+  verifyUrl: string;
+};
+
 /** Parsed contents of `signedData` (what the signature covers). */
 export type SignedCertificate = {
   type: string;
@@ -331,4 +343,10 @@ export const api = {
 
   /** Public: no sign-in needed. */
   verifyCertificate: (id: string) => request<ApiCertificateVerify>(`/certificates/verify/${id}`),
+
+  /** Public: masked gallery of issued certificates for the Scholarship Ledger. */
+  listPublicCertificates: (category?: string) =>
+    request<ApiCertificatePublic[]>(
+      `/certificates/public${category ? `?category=${encodeURIComponent(category)}` : ''}`
+    ),
 };

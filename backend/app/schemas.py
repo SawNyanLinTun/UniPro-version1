@@ -236,3 +236,17 @@ class CertificateVerifyOut(BaseModel):
     publicKey: str
     revokedAt: str | None = None
     revokeReason: str | None = None
+
+
+class CertificatePublicOut(BaseModel):
+    """One card in the public Scholarship Ledger gallery — masked, no private fields."""
+
+    id: str
+    maskedName: str
+    company: str
+    companyVerified: bool
+    role: str
+    category: str
+    skills: list[CertificateSkillOut]
+    issuedAt: str | None = None
+    verifyUrl: str

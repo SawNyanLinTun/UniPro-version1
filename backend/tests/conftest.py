@@ -13,6 +13,9 @@ os.environ.setdefault("JWT_SECRET", "test-secret")
 os.environ.setdefault("CORS_ORIGINS", "http://localhost:3000")
 os.environ.setdefault("INIT_DB_ON_STARTUP", "false")
 os.environ.setdefault("SEED_ON_STARTUP", "false")
+# 32 zero bytes, base64-encoded — a throwaway Ed25519 seed so certificate
+# signing/verification works in tests without a real production key.
+os.environ.setdefault("CERTIFICATE_SIGNING_KEY", "A" * 43 + "=")
 
 _db_fd, _db_path = tempfile.mkstemp(suffix=".db")
 os.close(_db_fd)

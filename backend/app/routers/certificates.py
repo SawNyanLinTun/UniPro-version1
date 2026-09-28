@@ -20,9 +20,9 @@ from datetime import date, datetime, timezone
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import select
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy.orm import Session, contains_eager, joinedload
 
 from app import signing
 from app.auth import get_current_user, require_roles
@@ -48,6 +48,7 @@ from app.schemas import (
     CertificateOut,
     CertificatePrefillOut,
     CertificatePublicKeyOut,
+    CertificatePublicOut,
     CertificateRevoke,
     CertificateSkillOut,
     CertificateVerifyOut,
@@ -71,6 +72,21 @@ def _verify_url(certificate_id: UUID) -> str:
 
 def _iso(dt: datetime | None) -> str | None:
     return dt.isoformat() if dt else None
+
+
+def _mask_name(full_name: str | None) -> str:
+    """'Somchai Boonmee' -> 'S****i B.' — never expose a real name on the public gallery."""
+    parts = (full_name or "").strip().split()
+    if not parts:
+        return "Anonymous"
+    first = parts[0]
+    first_masked = (
+        first[0] + "*" * max(len(first) - 1, 1)
+        if len(first) <= 2
+        else first[0] + "*" * (len(first) - 2) + first[-1]
+    )
+    last_initial = f" {parts[-1][0]}." if len(parts) > 1 else ""
+    return f"{first_masked}{last_initial}"
 
 
 def _load(db: Session, certificate_id: UUID) -> InternshipCertificate:
@@ -227,6 +243,42 @@ def verify_certificate(
         revokedAt=_iso(cert.revoked_at),
         revokeReason=cert.revoke_reason,
     )
+
+
+@router.get("/public", response_model=list[CertificatePublicOut])
+def list_public_certificates(
+    db: Annotated[Session, Depends(get_db)],
+    category: str | None = Query(default=None, description="Filter by internship category, case-insensitive"),
+) -> list[CertificatePublicOut]:
+    """Masked gallery of issued certificates for the Scholarship Ledger. No auth required."""
+    q = (
+        select(InternshipCertificate)
+        .join(InternshipCertificate.internship)
+        .where(InternshipCertificate.status == CertificateStatus.issued)
+        .options(
+            contains_eager(InternshipCertificate.internship),
+            joinedload(InternshipCertificate.company),
+            joinedload(InternshipCertificate.student).joinedload(Student.user),
+        )
+        .order_by(InternshipCertificate.issued_at.desc())
+    )
+    if category:
+        q = q.where(Internship.category.ilike(category))
+    rows = db.scalars(q).unique().all()
+    return [
+        CertificatePublicOut(
+            id=str(c.certificate_id),
+            maskedName=_mask_name(c.student.user.full_name if c.student and c.student.user else None),
+            company=c.company.company_name if c.company else "",
+            companyVerified=bool(c.company.verification_status) if c.company else False,
+            role=c.role_title,
+            category=c.internship.category if c.internship else "",
+            skills=[CertificateSkillOut(**s) for s in (c.skills or [])],
+            issuedAt=_iso(c.issued_at),
+            verifyUrl=_verify_url(c.certificate_id),
+        )
+        for c in rows
+    ]
 
 
 # ---------------------------------------------------------------------------

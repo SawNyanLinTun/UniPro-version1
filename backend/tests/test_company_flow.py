@@ -82,7 +82,9 @@ def test_candidates_are_ranked_by_skill_overlap(client, as_user, make_user):
     as_user(company)
     r = client.get(f"/jobs/{job['id']}/candidates")
     assert r.status_code == 200
-    names = [c["fullName"] for c in r.json()]
+    # Candidate ranking spans every student in the DB, not just these two, so filter
+    # to the ones this test created rather than assuming the list is exclusively theirs.
+    names = [c["fullName"] for c in r.json() if c["fullName"] in ("Strong Match", "Weak Match")]
     assert names == ["Strong Match", "Weak Match"]  # best match first
 
 

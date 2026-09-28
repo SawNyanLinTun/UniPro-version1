@@ -218,12 +218,7 @@ const en = {
   'sch.badge': 'Privacy-preserving ledger',
   'sch.title': 'Scholarship Ledger',
   'sch.subtitle':
-    'Alumni outcomes shown with hashed identities — redesign route wired with UniPro-style mock data.',
-  'sch.allTracks': 'All tracks',
-  'sch.web': 'Web Development',
-  'sch.eng': 'Engineering',
-  'sch.acc': 'Accounting',
-  'sch.coverage': 'CV coverage',
+    'Every record here is confirmed by a real company and signed by UniPro with public-key cryptography. Anyone can verify one independently — no need to trust our servers.',
 
   // certificates
   'nav.certificates': 'Certificates',
@@ -487,12 +482,7 @@ const th: Record<TranslationKey, string> = {
   'sch.badge': 'บัญชีที่รักษาความเป็นส่วนตัว',
   'sch.title': 'บัญชีทุนการศึกษา',
   'sch.subtitle':
-    'ผลลัพธ์ศิษย์เก่าแสดงด้วยตัวตนแบบแฮช — เส้นทาง redesign ที่เชื่อมข้อมูลจำลองสไตล์ UniPro',
-  'sch.allTracks': 'ทุกสาย',
-  'sch.web': 'พัฒนาเว็บ',
-  'sch.eng': 'วิศวกรรม',
-  'sch.acc': 'บัญชี',
-  'sch.coverage': 'ความครอบคลุม CV',
+    'ทุกรายการยืนยันโดยบริษัทจริงและลงลายเซ็นโดย UniPro ด้วยการเข้ารหัสแบบกุญแจสาธารณะ ทุกคนตรวจสอบความถูกต้องได้เอง โดยไม่ต้องเชื่อใจเซิร์ฟเวอร์ของเรา',
 
   // certificates
   'nav.certificates': 'ใบรับรอง',

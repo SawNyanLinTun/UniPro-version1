@@ -1,81 +1,51 @@
-﻿import React, { useMemo, useState } from 'react';
-import { GraduationCap, Hash, Building2, Shield } from 'lucide-react';
-import { ScholarshipAlumni, ScholarshipTrack } from '../types';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { GraduationCap, Building2, BadgeCheck, ExternalLink, Loader2, Shield } from 'lucide-react';
+import { api, ApiCertificatePublic } from '../services/api';
 import { useLanguage } from '../contexts/LanguageContext';
+import { TranslationKey } from '../i18n/translations';
 
-const MOCK_ALUMNI: ScholarshipAlumni[] = [
-  {
-    id: 'a1',
-    track: 'web_development',
-    maskedName: 'S****k T.',
-    nameHash: 'a3f1c9e8b2d44710',
-    companyLabel: 'Agoda',
-    companyHash: '91bc44aa7712fe03',
-    scholarshipYear: 2023,
-    role: 'Frontend Intern',
-    skills: ['react', 'typescript', 'css'],
-    radar: {
-      technicalSkills: 82,
-      experienceDepth: 64,
-      projects: 78,
-      softSkills: 70,
-      academicStrength: 75,
-      toolsStack: 80,
-    },
-  },
-  {
-    id: 'a2',
-    track: 'engineering',
-    maskedName: 'N****a P.',
-    nameHash: 'bb8812cd9930aa11',
-    companyLabel: 'SCB 10X',
-    companyHash: '55ee19ff0022cc88',
-    scholarshipYear: 2022,
-    role: 'ML Research Intern',
-    skills: ['python', 'pytorch', 'nlp'],
-    radar: {
-      technicalSkills: 88,
-      experienceDepth: 72,
-      projects: 81,
-      softSkills: 68,
-      academicStrength: 90,
-      toolsStack: 76,
-    },
-  },
-  {
-    id: 'a3',
-    track: 'accounting',
-    maskedName: 'K****n S.',
-    nameHash: 'cc2200ffaabb9911',
-    companyLabel: 'KBTG',
-    companyHash: '33aa77bb1100dd22',
-    scholarshipYear: 2024,
-    role: 'Finance Ops Intern',
-    skills: ['excel', 'sql', 'fintech'],
-    radar: {
-      technicalSkills: 60,
-      experienceDepth: 58,
-      projects: 55,
-      softSkills: 84,
-      academicStrength: 86,
-      toolsStack: 62,
-    },
-  },
-];
+const ghostBtn =
+  'inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold border border-border hover:bg-surface-hover transition-colors';
+
+function formatDate(iso: string, locale: string) {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  return d.toLocaleDateString(locale === 'th' ? 'th-TH' : 'en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+}
 
 const ScholarshipLedgerPage: React.FC = () => {
-  const { t } = useLanguage();
-  const [track, setTrack] = useState<ScholarshipTrack | 'all'>('all');
+  const { t, locale } = useLanguage();
+  const [items, setItems] = useState<ApiCertificatePublic[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [category, setCategory] = useState('All');
 
-  const trackLabel: Record<ScholarshipTrack, string> = {
-    web_development: t('sch.web'),
-    accounting: t('sch.acc'),
-    engineering: t('sch.eng'),
-  };
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const data = await api.listPublicCertificates();
+        if (!cancelled) setItems(data);
+      } catch (e) {
+        if (!cancelled) setError(e instanceof Error ? e.message : String(e));
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const categories = useMemo(
+    () => ['All', ...Array.from(new Set(items.map((i) => i.category).filter(Boolean))).sort()],
+    [items]
+  );
 
   const rows = useMemo(
-    () => MOCK_ALUMNI.filter((a) => track === 'all' || a.track === track),
-    [track]
+    () => (category === 'All' ? items : items.filter((i) => i.category === category)),
+    [items, category]
   );
 
   return (
@@ -89,66 +59,88 @@ const ScholarshipLedgerPage: React.FC = () => {
           <p className="text-text-secondary text-lg leading-relaxed">{t('sch.subtitle')}</p>
         </header>
 
-        <div className="flex flex-wrap gap-3 mb-10">
-          {(['all', 'web_development', 'engineering', 'accounting'] as const).map((key) => (
-            <button
-              key={key}
-              type="button"
-              onClick={() => setTrack(key)}
-              className={`px-5 py-2 rounded-full text-xs font-mono uppercase tracking-widest border transition-colors ${
-                track === key
-                  ? 'bg-primary text-white border-primary'
-                  : 'border-border text-text-secondary hover:text-text hover:border-border-strong'
-              }`}
-            >
-              {key === 'all' ? t('sch.allTracks') : trackLabel[key]}
-            </button>
-          ))}
-        </div>
+        {categories.length > 1 && (
+          <div className="flex flex-wrap gap-3 mb-10">
+            {categories.map((key) => (
+              <button
+                key={key}
+                type="button"
+                onClick={() => setCategory(key)}
+                className={`px-5 py-2 rounded-full text-xs font-mono uppercase tracking-widest border transition-colors ${
+                  category === key
+                    ? 'bg-primary text-white border-primary'
+                    : 'border-border text-text-secondary hover:text-text hover:border-border-strong'
+                }`}
+              >
+                {key === 'All' ? t('common.all') : key}
+              </button>
+            ))}
+          </div>
+        )}
 
-        <div className="grid gap-6">
-          {rows.map((alum) => (
-            <article key={alum.id} className="glass-card rounded-[28px] p-8 flex flex-col md:flex-row md:items-center gap-6">
-              <div className="w-14 h-14 rounded-2xl bg-primary-muted text-primary flex items-center justify-center shrink-0">
-                <GraduationCap size={26} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex flex-wrap items-center gap-3 mb-2">
-                  <h2 className="text-xl font-bold">{alum.maskedName}</h2>
-                  <span className="text-[0.65rem] font-mono uppercase tracking-widest text-text-muted px-3 py-1 rounded-full border border-border">
-                    {trackLabel[alum.track]}
-                  </span>
+        {error && <p className="text-sm text-error mb-6 break-words">{error}</p>}
+
+        {loading ? (
+          <div className="flex items-center gap-2 text-text-secondary">
+            <Loader2 size={18} className="animate-spin" /> {t('common.loading')}
+          </div>
+        ) : rows.length === 0 ? (
+          <p className="text-text-muted text-sm">{t('cert.empty')}</p>
+        ) : (
+          <div className="grid gap-6">
+            {rows.map((item) => (
+              <article
+                key={item.id}
+                className="glass-card rounded-[28px] p-8 flex flex-col md:flex-row md:items-start gap-6"
+              >
+                <div className="w-14 h-14 rounded-2xl bg-primary-muted text-primary flex items-center justify-center shrink-0">
+                  <GraduationCap size={26} />
                 </div>
-                <p className="text-sm text-text-secondary mb-3">
-                  {alum.role} · Class of {alum.scholarshipYear}
-                </p>
-                <div className="flex flex-wrap gap-4 text-xs font-mono text-text-muted">
-                  <span className="inline-flex items-center gap-1.5">
-                    <Hash size={12} /> {alum.nameHash}
-                  </span>
-                  <span className="inline-flex items-center gap-1.5">
-                    <Building2 size={12} /> {alum.companyLabel} · {alum.companyHash}
-                  </span>
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-wrap items-center gap-3 mb-2">
+                    <h2 className="text-xl font-bold">{item.maskedName}</h2>
+                    {item.category && (
+                      <span className="text-[0.65rem] font-mono uppercase tracking-widest text-text-muted px-3 py-1 rounded-full border border-border">
+                        {item.category}
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-sm text-text-secondary mb-3">{item.role}</p>
+                  <div className="flex flex-wrap items-center gap-4 text-xs font-mono text-text-muted uppercase mb-4">
+                    <span className="inline-flex items-center gap-1.5">
+                      <Building2 size={12} /> {item.company}
+                    </span>
+                    {item.companyVerified && (
+                      <span className="inline-flex items-center gap-1 text-success">
+                        <BadgeCheck size={12} /> {t('verify.companyVerified')}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {item.skills.map((s) => (
+                      <span
+                        key={s.id}
+                        className="px-3 py-1.5 rounded-full bg-primary-muted text-primary text-xs font-semibold"
+                      >
+                        {s.name} · {t(`cert.level.${s.level}` as TranslationKey)}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-              </div>
-              <div className="text-right shrink-0">
-                <p className="text-[0.6rem] font-mono uppercase tracking-widest text-text-muted mb-1">{t('sch.coverage')}</p>
-                <p className="text-3xl font-black text-primary">
-                  {Math.round(
-                    (alum.radar.technicalSkills +
-                      alum.radar.experienceDepth +
-                      alum.radar.projects +
-                      alum.radar.softSkills +
-                      alum.radar.academicStrength +
-                      alum.radar.toolsStack) /
-                      6
+                <div className="flex flex-row md:flex-col items-start md:items-end justify-between md:justify-start gap-3 shrink-0">
+                  {item.issuedAt && (
+                    <p className="text-[0.6rem] font-mono uppercase tracking-widest text-text-muted whitespace-nowrap">
+                      {t('cert.issued')}: {formatDate(item.issuedAt, locale)}
+                    </p>
                   )}
-                  %
-                </p>
-              </div>
-            </article>
-          ))}
-        </div>
+                  <Link to={`/verify/${item.id}`} className={`${ghostBtn} whitespace-nowrap`}>
+                    <ExternalLink size={16} /> {t('cert.openVerify')}
+                  </Link>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
