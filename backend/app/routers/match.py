@@ -11,14 +11,20 @@ from app.database import get_db
 from app.embeddings import embed_text
 from app.matching import compute_match
 from app.models import Internship, InternshipSkill, InternshipStatus, Match, Student, StudentSkill, User, UserRole
+from app.routers.certificates import verified_skill_ids
 from app.schemas import CandidateMatchOut, MatchRequest, MatchResultOut
 
 router = APIRouter(tags=["match"])
 
 
 def _student_skill_ids(db: Session, student_id: UUID) -> set[str]:
+    """CV skills plus skills confirmed on issued internship certificates.
+
+    Certificate skills are kept separately from student_skills, so re-uploading a
+    CV never removes skills a company has confirmed.
+    """
     rows = db.scalars(select(StudentSkill.skill_id).where(StudentSkill.student_id == student_id)).all()
-    return set(rows)
+    return set(rows) | verified_skill_ids(db, student_id)
 
 
 def _internship_skill_ids(db: Session, internship_id: UUID) -> set[str]:

@@ -46,6 +46,23 @@ class ApplicationStatus(str, enum.Enum):
     rejected = "rejected"
 
 
+class CertificateStatus(str, enum.Enum):
+    # Company confirmed the internship; waiting for the student to accept the record.
+    awaiting_student = "awaiting_student"
+    # Student accepted; UniPro signed it. Publicly verifiable.
+    issued = "issued"
+    # Student disagreed with the record; company can correct and resubmit.
+    disputed = "disputed"
+    # Withdrawn after issue (e.g. issued by mistake). Verify page shows "Revoked".
+    revoked = "revoked"
+
+
+class SkillLevel(str, enum.Enum):
+    basic = "basic"
+    good = "good"
+    strong = "strong"
+
+
 def _str_enum(enum_cls: type[enum.Enum], name: str) -> Enum:
     """Store enum *values* as strings (SQLite + Postgres friendly)."""
     return Enum(
@@ -240,3 +257,57 @@ class SavedInternship(Base):
 
     student: Mapped[Student] = relationship(back_populates="saved")
     internship: Mapped[Internship] = relationship(back_populates="saved_by")
+
+
+class InternshipCertificate(Base):
+    """
+    Signed record that a student completed an internship found through UniPro.
+
+    Flow: company confirms (awaiting_student) → student accepts → UniPro signs (issued).
+    ``signed_payload`` is the exact JSON string that ``signature`` covers; it is only
+    set once issued and must never be edited afterwards.
+    """
+
+    __tablename__ = "internship_certificates"
+
+    certificate_id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    application_id: Mapped[uuid.UUID] = mapped_column(
+        Uuid(as_uuid=True),
+        ForeignKey("applications.application_id", ondelete="CASCADE"),
+        nullable=False,
+        unique=True,
+    )
+    student_id: Mapped[uuid.UUID] = mapped_column(
+        Uuid(as_uuid=True), ForeignKey("students.user_id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    company_id: Mapped[uuid.UUID] = mapped_column(
+        Uuid(as_uuid=True), ForeignKey("companies.user_id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    internship_id: Mapped[uuid.UUID] = mapped_column(
+        Uuid(as_uuid=True), ForeignKey("internships.internship_id", ondelete="CASCADE"), nullable=False
+    )
+    role_title: Mapped[str] = mapped_column(String(255), nullable=False)
+    start_date: Mapped[date] = mapped_column(Date, nullable=False)
+    end_date: Mapped[date] = mapped_column(Date, nullable=False)
+    # [{"id": "react", "name": "React", "level": "strong"}, ...]
+    skills: Mapped[list] = mapped_column(JSON, default=list)
+    supervisor_name: Mapped[str] = mapped_column(String(255), nullable=False)
+    supervisor_comment: Mapped[str | None] = mapped_column(Text)
+    status: Mapped[CertificateStatus] = mapped_column(
+        _str_enum(CertificateStatus, "certificate_status"),
+        default=CertificateStatus.awaiting_student,
+        server_default=CertificateStatus.awaiting_student.value,
+        nullable=False,
+    )
+    student_note: Mapped[str | None] = mapped_column(Text)
+    signed_payload: Mapped[str | None] = mapped_column(Text)
+    signature: Mapped[str | None] = mapped_column(String(128))
+    key_id: Mapped[str | None] = mapped_column(String(64))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    issued_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    revoked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    revoke_reason: Mapped[str | None] = mapped_column(Text)
+
+    student: Mapped[Student] = relationship()
+    company: Mapped[Company] = relationship()
+    internship: Mapped[Internship] = relationship()

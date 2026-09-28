@@ -15,6 +15,8 @@ import ApplicationsPage from './pages/ApplicationsPage';
 import ProfilePage from './pages/ProfilePage';
 import AboutPage from './pages/AboutPage';
 import ScholarshipLedgerPage from './pages/ScholarshipLedgerPage';
+import CertificatesPage from './pages/CertificatesPage';
+import VerifyCertificatePage from './pages/VerifyCertificatePage';
 
 const LoadingFallback = () => {
   const { t } = useLanguage();
@@ -131,6 +133,16 @@ const App: React.FC = () => {
                     </ProtectedRoute>
                   }
                 />
+                <Route
+                  path="/certificates"
+                  element={
+                    <ProtectedRoute>
+                      <CertificatesPage />
+                    </ProtectedRoute>
+                  }
+                />
+                {/* Public: anyone with the link can check a certificate */}
+                <Route path="/verify/:id" element={<VerifyCertificatePage />} />
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
   Menu, X, User, Heart, Briefcase, Sparkles, Home, Info,
-  LogIn, UserPlus, ChevronRight, LogOut, GraduationCap, Lock,
+  LogIn, UserPlus, ChevronRight, LogOut, GraduationCap, Lock, Award,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -30,6 +30,7 @@ const Navigation: React.FC = () => {
     },
     { name: t('nav.saved'), path: '/saved', icon: <Heart size={20} /> },
     { name: t('nav.applications'), path: '/applications', icon: <Briefcase size={20} /> },
+    { name: t('nav.certificates'), path: '/certificates', icon: <Award size={20} />, requiresAuth: true },
     { name: t('nav.about'), path: '/about', icon: <Info size={20} /> },
   ];
 
