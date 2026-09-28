@@ -113,6 +113,9 @@ const en = {
   'browse.location': 'Location',
   'browse.showing': 'Showing {count} results',
   'browse.empty': 'No positions match your current filters.',
+  'browse.apply': 'Apply',
+  'browse.applied': 'Applied',
+  'browse.signInToApply': 'Sign in to apply',
 
   // smartmatch
   'smart.badge': 'AI Propelled Matching',
@@ -426,6 +429,9 @@ const th: Record<TranslationKey, string> = {
   'browse.location': 'สถานที่',
   'browse.showing': 'แสดง {count} รายการ',
   'browse.empty': 'ไม่มีตำแหน่งที่ตรงกับตัวกรองปัจจุบัน',
+  'browse.apply': 'สมัคร',
+  'browse.applied': 'สมัครแล้ว',
+  'browse.signInToApply': 'เข้าสู่ระบบเพื่อสมัคร',
 
   'smart.badge': 'การจับคู่ขับเคลื่อนด้วย AI',
   'smart.title': 'SmartMatch AI Catalyst',

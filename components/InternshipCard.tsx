@@ -1,13 +1,28 @@
 
 import React, { useState } from 'react';
+import { Check, Loader2 } from 'lucide-react';
 import { Internship } from '../types';
+import { useLanguage } from '../contexts/LanguageContext';
+
+export type ApplyState = 'hidden' | 'locked' | 'idle' | 'busy' | 'applied';
 
 interface InternshipCardProps {
   internship: Internship;
   delay?: string;
+  /** Omit (defaults to 'hidden') on pages that shouldn't show an Apply action, e.g. Saved. */
+  applyState?: ApplyState;
+  onApply?: () => void;
+  onSignInRequired?: () => void;
 }
 
-const InternshipCard: React.FC<InternshipCardProps> = ({ internship, delay = "0s" }) => {
+const InternshipCard: React.FC<InternshipCardProps> = ({
+  internship,
+  delay = '0s',
+  applyState = 'hidden',
+  onApply,
+  onSignInRequired,
+}) => {
+  const { t } = useLanguage();
   const [transform, setTransform] = useState('perspective(1000px) rotateX(0) rotateY(0)');
   const [distortionPos, setDistortionPos] = useState({ x: 0, y: 0, opacity: 0 });
 
@@ -76,8 +91,32 @@ const InternshipCard: React.FC<InternshipCardProps> = ({ internship, delay = "0s
             {internship.stipend}
           </span>
         </div>
+
+        {applyState !== 'hidden' && (
+          <div className="mt-6">
+            {applyState === 'applied' ? (
+              <span className="inline-flex items-center gap-2 text-success text-xs font-mono uppercase tracking-widest">
+                <Check size={14} /> {t('browse.applied')}
+              </span>
+            ) : (
+              <button
+                type="button"
+                disabled={applyState === 'busy'}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (applyState === 'locked') onSignInRequired?.();
+                  else onApply?.();
+                }}
+                className="inline-flex items-center gap-2 bg-primary text-white px-5 py-2 rounded-full text-xs font-mono uppercase tracking-widest hover:opacity-90 transition-opacity disabled:opacity-50"
+              >
+                {applyState === 'busy' && <Loader2 size={14} className="animate-spin" />}
+                {applyState === 'locked' ? t('browse.signInToApply') : t('browse.apply')}
+              </button>
+            )}
+          </div>
+        )}
       </div>
-      
+
       <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       
       <style>{`

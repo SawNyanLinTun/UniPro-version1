@@ -1,35 +1,95 @@
-import React, { useState, useMemo } from 'react';
-import { Search, Coins } from 'lucide-react';
-import InternshipCard from '../components/InternshipCard';
-import { MOCK_INTERNSHIPS } from '../constants';
-import { InternshipCategory } from '../types';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Search, Coins, Loader2 } from 'lucide-react';
+import InternshipCard, { ApplyState } from '../components/InternshipCard';
+import { api, ApiJob } from '../services/api';
+import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 
 const BrowsePage: React.FC = () => {
   const { t } = useLanguage();
+  const { isAuthenticated, user, accessToken, openAuthModal } = useAuth();
+
+  const [jobs, setJobs] = useState<ApiJob[]>([]);
+  const [appliedIds, setAppliedIds] = useState<Set<string>>(new Set());
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [applyingId, setApplyingId] = useState<string | null>(null);
+  const [applyError, setApplyError] = useState<string | null>(null);
+
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [selectedLocation, setSelectedLocation] = useState<string>('All');
 
-  // Location / category values stay English so they still match mock data
-  const locations = ['All', 'Bangkok', 'Phuket', 'Chiang Mai', 'Nonthaburi'];
-  const categories = ['All', ...Object.values(InternshipCategory)];
+  const isStudent = isAuthenticated && user?.role === 'student';
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const [openJobs, applications] = await Promise.all([
+          api.listJobs(),
+          isStudent ? api.listApplications(accessToken) : Promise.resolve([]),
+        ]);
+        if (cancelled) return;
+        setJobs(openJobs);
+        setAppliedIds(new Set(applications.map((a) => a.internshipId)));
+      } catch (e) {
+        if (!cancelled) setError(e instanceof Error ? e.message : String(e));
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [isStudent, accessToken]);
+
+  // Category / location values stay as companies typed them, same convention as the Scholarship Ledger.
+  const categories = useMemo(
+    () => ['All', ...Array.from(new Set(jobs.map((j) => j.category))).sort()],
+    [jobs]
+  );
+  const locations = useMemo(
+    () => ['All', ...Array.from(new Set(jobs.map((j) => j.location))).sort()],
+    [jobs]
+  );
 
   const filteredInternships = useMemo(() => {
-    return MOCK_INTERNSHIPS.filter((item) => {
+    return jobs.filter((item) => {
       const matchesSearch =
         !searchQuery ||
         item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         item.company.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesCategory = selectedCategory === 'All' || item.category === selectedCategory;
-      const matchesLocation =
-        selectedLocation === 'All' ||
-        item.location.toLowerCase().includes(selectedLocation.toLowerCase());
+      const matchesLocation = selectedLocation === 'All' || item.location === selectedLocation;
       return matchesSearch && matchesCategory && matchesLocation;
     });
-  }, [searchQuery, selectedCategory, selectedLocation]);
+  }, [jobs, searchQuery, selectedCategory, selectedLocation]);
 
   const labelFor = (value: string) => (value === 'All' ? t('common.all') : value);
+
+  const applyStateFor = (job: ApiJob): ApplyState => {
+    if (!isAuthenticated) return 'locked';
+    if (user?.role !== 'student') return 'hidden';
+    if (appliedIds.has(job.id)) return 'applied';
+    if (applyingId === job.id) return 'busy';
+    return 'idle';
+  };
+
+  const handleApply = async (job: ApiJob) => {
+    setApplyingId(job.id);
+    setApplyError(null);
+    try {
+      await api.apply(job.id, accessToken);
+      setAppliedIds((prev) => new Set(prev).add(job.id));
+    } catch (e) {
+      setApplyError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setApplyingId(null);
+    }
+  };
 
   return (
     <div className="px-8 md:px-20 animate-[fadeIn_0.5s_ease-out]">
@@ -47,6 +107,9 @@ const BrowsePage: React.FC = () => {
             />
           </div>
         </header>
+
+        {error && <p className="text-sm text-error mb-6 break-words">{error}</p>}
+        {applyError && <p className="text-sm text-error mb-6 break-words">{applyError}</p>}
 
         <div className="flex flex-col lg:flex-row gap-12">
           <aside className="lg:w-72 space-y-10">
@@ -102,19 +165,32 @@ const BrowsePage: React.FC = () => {
               </span>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 min-h-[400px]">
-              {filteredInternships.map((internship, i) => (
-                <InternshipCard key={internship.id} internship={internship} delay={`${i * 0.05}s`} />
-              ))}
-              {filteredInternships.length === 0 && (
-                <div className="col-span-full py-24 text-center glass-card rounded-[40px] flex flex-col items-center">
-                  <Coins size={40} className="text-text-muted mb-4" />
-                  <p className="text-text-muted font-mono text-sm uppercase tracking-widest">
-                    {t('browse.empty')}
-                  </p>
-                </div>
-              )}
-            </div>
+            {loading ? (
+              <div className="flex items-center gap-2 text-text-secondary">
+                <Loader2 size={18} className="animate-spin" /> {t('common.loading')}
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 min-h-[400px]">
+                {filteredInternships.map((internship, i) => (
+                  <InternshipCard
+                    key={internship.id}
+                    internship={internship}
+                    delay={`${i * 0.05}s`}
+                    applyState={applyStateFor(internship)}
+                    onApply={() => handleApply(internship)}
+                    onSignInRequired={() => openAuthModal('request')}
+                  />
+                ))}
+                {filteredInternships.length === 0 && (
+                  <div className="col-span-full py-24 text-center glass-card rounded-[40px] flex flex-col items-center">
+                    <Coins size={40} className="text-text-muted mb-4" />
+                    <p className="text-text-muted font-mono text-sm uppercase tracking-widest">
+                      {t('browse.empty')}
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
