@@ -37,6 +37,8 @@ export type ApiMatchResult = {
 export type ApiApplication = {
   id: string;
   internshipId: string;
+  studentId?: string;
+  studentName?: string | null;
   role: string;
   company: string;
   status: 'applied' | 'under_review' | 'interview' | 'accepted' | 'rejected';
@@ -67,6 +69,81 @@ export type ApiMe = {
   graduation_year?: number | null;
   gpa?: number | null;
   skills?: string[];
+};
+
+export type ApiSkillLevel = 'basic' | 'good' | 'strong';
+
+export type ApiCertificateStatus = 'awaiting_student' | 'issued' | 'disputed' | 'revoked';
+
+export type ApiCertificateSkill = { id: string; name: string; level: ApiSkillLevel };
+
+export type ApiCertificate = {
+  id: string;
+  applicationId: string;
+  internshipId: string;
+  studentId: string;
+  studentName?: string | null;
+  company: string;
+  role: string;
+  startDate: string;
+  endDate: string;
+  skills: ApiCertificateSkill[];
+  supervisorName: string;
+  supervisorComment?: string | null;
+  status: ApiCertificateStatus;
+  studentNote?: string | null;
+  createdAt?: string | null;
+  issuedAt?: string | null;
+  revokedAt?: string | null;
+  revokeReason?: string | null;
+  verifyUrl?: string | null;
+};
+
+export type ApiCertificateCreate = {
+  application_id: string;
+  start_date: string;
+  end_date: string;
+  skills: { name: string; level: ApiSkillLevel }[];
+  supervisor_name: string;
+  supervisor_comment?: string | null;
+};
+
+export type ApiCertificatePrefill = {
+  applicationId: string;
+  studentName?: string | null;
+  role: string;
+  suggestedSkills: string[];
+};
+
+export type ApiCertificateVerify = {
+  id: string;
+  status: ApiCertificateStatus;
+  valid: boolean;
+  signatureValid: boolean;
+  signedData: string;
+  signature: string;
+  keyId: string;
+  algorithm: string;
+  publicKey: string;
+  revokedAt?: string | null;
+  revokeReason?: string | null;
+};
+
+/** Parsed contents of `signedData` (what the signature covers). */
+export type SignedCertificate = {
+  type: string;
+  version: number;
+  id: string;
+  issuer: string;
+  issuedAt: string;
+  keyId: string;
+  student: { id: string; name: string };
+  company: { id: string; name: string; verified: boolean };
+  internship: { id: string; role: string };
+  period: { start: string; end: string };
+  skills: ApiCertificateSkill[];
+  confirmedBy: { name: string; comment?: string | null };
+  statement: string;
 };
 
 /** Current Supabase access token, or null if signed out / unconfigured. */
@@ -194,4 +271,64 @@ export const api = {
       headers: authHeaders(access),
     });
   },
+  // --- Internship certificates -------------------------------------------
+
+  listCertificates: async (token?: string | null) => {
+    const access = await resolveToken(token);
+    if (!access) throw new Error('Not authenticated');
+    return request<ApiCertificate[]>('/certificates', { headers: authHeaders(access) });
+  },
+
+  /** Company: skills checklist pre-filled from the posting. */
+  certificatePrefill: async (applicationId: string, token?: string | null) => {
+    const access = await resolveToken(token);
+    if (!access) throw new Error('Not authenticated');
+    return request<ApiCertificatePrefill>(`/certificates/prefill/${applicationId}`, {
+      headers: authHeaders(access),
+    });
+  },
+
+  /** Company: confirm a completed internship (or resubmit a disputed one). */
+  confirmInternship: async (body: ApiCertificateCreate, token?: string | null) => {
+    const access = await resolveToken(token);
+    if (!access) throw new Error('Not authenticated');
+    return request<ApiCertificate>('/certificates', {
+      method: 'POST',
+      headers: authHeaders(access),
+      body: JSON.stringify(body),
+    });
+  },
+
+  /** Student: accept → UniPro signs and issues it. */
+  acceptCertificate: async (id: string, token?: string | null) => {
+    const access = await resolveToken(token);
+    if (!access) throw new Error('Not authenticated');
+    return request<ApiCertificate>(`/certificates/${id}/accept`, {
+      method: 'POST',
+      headers: authHeaders(access),
+    });
+  },
+
+  declineCertificate: async (id: string, note: string, token?: string | null) => {
+    const access = await resolveToken(token);
+    if (!access) throw new Error('Not authenticated');
+    return request<ApiCertificate>(`/certificates/${id}/decline`, {
+      method: 'POST',
+      headers: authHeaders(access),
+      body: JSON.stringify({ note }),
+    });
+  },
+
+  revokeCertificate: async (id: string, reason: string, token?: string | null) => {
+    const access = await resolveToken(token);
+    if (!access) throw new Error('Not authenticated');
+    return request<ApiCertificate>(`/certificates/${id}/revoke`, {
+      method: 'POST',
+      headers: authHeaders(access),
+      body: JSON.stringify({ reason }),
+    });
+  },
+
+  /** Public: no sign-in needed. */
+  verifyCertificate: (id: string) => request<ApiCertificateVerify>(`/certificates/verify/${id}`),
 };

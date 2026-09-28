@@ -135,3 +135,45 @@ curl -s http://localhost:8000/jobs
 ## Railway
 
 See [`../RAILWAY.md`](../RAILWAY.md) for production Docker, env vars, Supabase Auth URL allowlist, and post-deploy smoke checks.
+
+## Internship certificates (signed)
+
+When an internship found through UniPro ends, the company confirms it and UniPro
+issues a certificate signed with **Ed25519**. Anyone with the link can check it,
+and changing a single character breaks the signature.
+
+**Flow:** company confirms (`awaiting_student`) → student accepts → UniPro signs (`issued`).
+The student can decline with a note (`disputed`), and the company corrects and resubmits.
+Companies or admins can withdraw an issued certificate (`revoked`).
+
+Skills on issued certificates count in SmartMatch alongside CV skills, and
+re-uploading a CV never removes them.
+
+### Setup
+
+1. Run `supabase/migrations/004_internship_certificates.sql` in the SQL Editor.
+2. Generate a signing key and add it to `backend/.env` (never commit it):
+   ```bash
+   python -m app.signing
+   ```
+3. Set `PUBLIC_APP_URL` to your frontend origin so verify links point to it.
+
+If the key is lost, existing certificates can no longer be verified. Store it
+like a password (Railway/Cloudflare secrets). If you ever rotate it, change
+`CERTIFICATE_KEY_ID` too.
+
+### Endpoints
+
+| Method | Path | Who |
+|--------|------|-----|
+| GET | `/certificates` | student (own), company (issued by them), admin |
+| GET | `/certificates/prefill/{application_id}` | company — skills checklist from the posting |
+| POST | `/certificates` | company — confirm an **accepted** application whose internship has ended |
+| POST | `/certificates/{id}/accept` | student — signs and issues |
+| POST | `/certificates/{id}/decline` | student — sends it back with a note |
+| POST | `/certificates/{id}/revoke` | company / admin |
+| GET | `/certificates/verify/{id}` | public — signed data, signature, status |
+| GET | `/certificates/public-key` | public — UniPro's public key |
+
+The frontend verify page (`/#/verify/<id>`) re-checks the signature in the
+visitor's browser with WebCrypto, so it doesn't rely only on the server's answer.

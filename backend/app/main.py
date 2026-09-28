@@ -7,7 +7,7 @@ from fastapi.responses import JSONResponse
 
 from app.config import get_settings
 from app.database import SessionLocal, init_db
-from app.routers import applications, auth, companies, cv, jobs, match, saved
+from app.routers import applications, auth, certificates, companies, cv, jobs, match, saved
 from app.seed import seed_if_empty
 
 settings = get_settings()
@@ -43,6 +43,7 @@ app.include_router(match.router)
 app.include_router(applications.router)
 app.include_router(cv.router)
 app.include_router(saved.router)
+app.include_router(certificates.router)
 
 
 @app.get("/health")

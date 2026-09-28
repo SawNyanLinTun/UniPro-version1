@@ -3,7 +3,7 @@ from datetime import date
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
-from app.models import ApplicationStatus, InternshipStatus, UserRole, WorkType
+from app.models import ApplicationStatus, CertificateStatus, InternshipStatus, SkillLevel, UserRole, WorkType
 
 
 class JobOut(BaseModel):
@@ -147,3 +147,92 @@ class StudentMeOut(BaseModel):
     graduation_year: int | None = None
     gpa: float | None = None
     skills: list[str] = Field(default_factory=list)
+
+
+# ---------------------------------------------------------------------------
+# Internship certificates
+# ---------------------------------------------------------------------------
+
+
+class CertificateSkillIn(BaseModel):
+    name: str = Field(min_length=1, max_length=128)
+    level: SkillLevel = SkillLevel.good
+
+
+class CertificateSkillOut(BaseModel):
+    id: str
+    name: str
+    level: SkillLevel
+
+
+class CertificateCreate(BaseModel):
+    """Company confirms a completed internship (about a 2-minute form)."""
+
+    application_id: uuid.UUID
+    start_date: date
+    end_date: date
+    skills: list[CertificateSkillIn] = Field(min_length=1, max_length=30)
+    supervisor_name: str = Field(min_length=1, max_length=255)
+    supervisor_comment: str | None = Field(default=None, max_length=1000)
+
+
+class CertificateDecline(BaseModel):
+    note: str | None = Field(default=None, max_length=1000)
+
+
+class CertificateRevoke(BaseModel):
+    reason: str = Field(min_length=1, max_length=1000)
+
+
+class CertificateOut(BaseModel):
+    id: str
+    applicationId: str
+    internshipId: str
+    studentId: str
+    studentName: str | None = None
+    company: str
+    role: str
+    startDate: str
+    endDate: str
+    skills: list[CertificateSkillOut]
+    supervisorName: str
+    supervisorComment: str | None = None
+    status: CertificateStatus
+    studentNote: str | None = None
+    createdAt: str | None = None
+    issuedAt: str | None = None
+    revokedAt: str | None = None
+    revokeReason: str | None = None
+    verifyUrl: str | None = None
+
+
+class CertificatePrefillOut(BaseModel):
+    """Checklist for the company form, pre-filled from the posting's required skills."""
+
+    applicationId: str
+    studentName: str | None = None
+    role: str
+    suggestedSkills: list[str]
+
+
+class CertificatePublicKeyOut(BaseModel):
+    keyId: str
+    algorithm: str
+    publicKey: str  # base64, raw 32 bytes
+    publicKeyPem: str
+
+
+class CertificateVerifyOut(BaseModel):
+    """Public verify result. ``signedData`` is exactly what ``signature`` covers."""
+
+    id: str
+    status: CertificateStatus
+    valid: bool
+    signatureValid: bool
+    signedData: str
+    signature: str
+    keyId: str
+    algorithm: str
+    publicKey: str
+    revokedAt: str | None = None
+    revokeReason: str | None = None
