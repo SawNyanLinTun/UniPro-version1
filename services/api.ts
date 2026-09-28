@@ -20,7 +20,32 @@ export type ApiJob = {
   tags: string[];
   postedDate: string;
   deadline: string;
+  status: 'open' | 'closed';
   skills?: string[];
+};
+
+export type ApiJobCreate = {
+  title: string;
+  description: string;
+  location: string;
+  work_type: 'remote' | 'hybrid' | 'onsite';
+  duration: string;
+  category: string;
+  stipend: string;
+  deadline: string;
+  tags: string[];
+};
+
+export type ApiJobUpdate = Partial<ApiJobCreate> & { status?: 'open' | 'closed' };
+
+export type ApiCompanyMe = {
+  user_id: string;
+  email: string;
+  full_name: string;
+  role: 'student' | 'company' | 'admin';
+  company_name?: string | null;
+  industry?: string | null;
+  verification_status: boolean;
 };
 
 export type ApiMatchResult = {
@@ -201,6 +226,50 @@ export const api = {
 
   getJob: (id: string) => request<ApiJob>(`/jobs/${id}`),
 
+  // --- Company: profile + postings ---------------------------------------
+
+  getMyCompany: async (token?: string | null) => {
+    const access = await resolveToken(token);
+    if (!access) throw new Error('Not authenticated');
+    return request<ApiCompanyMe>('/companies/me', { headers: authHeaders(access) });
+  },
+
+  updateMyCompany: async (body: { company_name: string; industry?: string | null }, token?: string | null) => {
+    const access = await resolveToken(token);
+    if (!access) throw new Error('Not authenticated');
+    return request<ApiCompanyMe>('/companies/me', {
+      method: 'PUT',
+      headers: authHeaders(access),
+      body: JSON.stringify(body),
+    });
+  },
+
+  listMyJobs: async (token?: string | null) => {
+    const access = await resolveToken(token);
+    if (!access) throw new Error('Not authenticated');
+    return request<ApiJob[]>('/jobs/mine', { headers: authHeaders(access) });
+  },
+
+  postJob: async (body: ApiJobCreate, token?: string | null) => {
+    const access = await resolveToken(token);
+    if (!access) throw new Error('Not authenticated');
+    return request<ApiJob>('/jobs', {
+      method: 'POST',
+      headers: authHeaders(access),
+      body: JSON.stringify(body),
+    });
+  },
+
+  updateJob: async (id: string, body: ApiJobUpdate, token?: string | null) => {
+    const access = await resolveToken(token);
+    if (!access) throw new Error('Not authenticated');
+    return request<ApiJob>(`/jobs/${id}`, {
+      method: 'PATCH',
+      headers: authHeaders(access),
+      body: JSON.stringify(body),
+    });
+  },
+
   extractCvText: async (text: string, token?: string | null) => {
     const access = await resolveToken(token);
     return request<ApiCvExtract>('/cv/extract', {
@@ -257,6 +326,21 @@ export const api = {
       method: 'POST',
       headers: authHeaders(access),
       body: JSON.stringify({ internship_id: internshipId }),
+    });
+  },
+
+  /** Company (or admin): move an applicant through the review pipeline. */
+  updateApplicationStatus: async (
+    id: string,
+    status: ApiApplication['status'],
+    token?: string | null
+  ) => {
+    const access = await resolveToken(token);
+    if (!access) throw new Error('Not authenticated');
+    return request<ApiApplication>(`/applications/${id}`, {
+      method: 'PATCH',
+      headers: authHeaders(access),
+      body: JSON.stringify({ status }),
     });
   },
 

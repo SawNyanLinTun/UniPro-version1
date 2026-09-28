@@ -17,6 +17,7 @@ import AboutPage from './pages/AboutPage';
 import ScholarshipLedgerPage from './pages/ScholarshipLedgerPage';
 import CertificatesPage from './pages/CertificatesPage';
 import VerifyCertificatePage from './pages/VerifyCertificatePage';
+import CompanyJobsPage from './pages/CompanyJobsPage';
 
 const LoadingFallback = () => {
   const { t } = useLanguage();
@@ -122,6 +123,14 @@ const App: React.FC = () => {
                   element={
                     <ProtectedRoute>
                       <ApplicationsPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/postings"
+                  element={
+                    <ProtectedRoute>
+                      <CompanyJobsPage />
                     </ProtectedRoute>
                   }
                 />

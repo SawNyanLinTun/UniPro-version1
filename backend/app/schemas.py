@@ -21,6 +21,7 @@ class JobOut(BaseModel):
     tags: list[str]
     postedDate: str
     deadline: str
+    status: InternshipStatus = InternshipStatus.open
     skills: list[str] = Field(default_factory=list)
 
 

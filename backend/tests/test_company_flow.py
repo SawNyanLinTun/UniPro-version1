@@ -54,6 +54,7 @@ def test_company_can_post_list_and_edit_a_job(client, as_user, make_user):
     assert r.status_code == 201
     job = r.json()
     assert job["skills"] == ["python", "sql"]
+    assert job["status"] == "open"  # newly posted jobs are open by default
 
     r = client.get("/jobs/mine")
     assert r.status_code == 200
@@ -63,6 +64,11 @@ def test_company_can_post_list_and_edit_a_job(client, as_user, make_user):
     assert r.status_code == 200
     assert sorted(r.json()["skills"]) == ["django", "python"]
     assert r.json()["type"] == "onsite"  # untouched fields survive a partial patch
+    assert r.json()["status"] == "closed"
+
+    # A closed listing drops out of the public /jobs feed but companies still see it on /jobs/mine.
+    assert not any(j["id"] == job["id"] for j in client.get("/jobs").json())
+    assert any(j["id"] == job["id"] for j in client.get("/jobs/mine").json())
 
 
 def test_candidates_are_ranked_by_skill_overlap(client, as_user, make_user):

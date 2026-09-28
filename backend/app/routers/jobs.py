@@ -43,6 +43,7 @@ def internship_to_job(internship: Internship) -> JobOut:
         tags=list(internship.tags or []),
         postedDate=internship.posted_date.isoformat(),
         deadline=internship.deadline.isoformat(),
+        status=internship.status,
         skills=skill_ids,
     )
 
