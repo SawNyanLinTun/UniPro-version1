@@ -222,6 +222,20 @@ export const api = {
     return request<ApiMe>('/auth/me', { headers: authHeaders(access) });
   },
 
+  /** Student: fill in / edit university, major, graduation year, GPA. Skills stay CV-driven. */
+  updateMyStudentProfile: async (
+    body: { university?: string | null; major?: string | null; graduation_year?: number | null; gpa?: number | null },
+    token?: string | null
+  ) => {
+    const access = await resolveToken(token);
+    if (!access) throw new Error('Not authenticated');
+    return request<ApiMe>('/students/me', {
+      method: 'PUT',
+      headers: authHeaders(access),
+      body: JSON.stringify(body),
+    });
+  },
+
   listJobs: () => request<ApiJob[]>('/jobs'),
 
   getJob: (id: string) => request<ApiJob>(`/jobs/${id}`),

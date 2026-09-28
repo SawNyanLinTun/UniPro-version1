@@ -150,6 +150,13 @@ class StudentMeOut(BaseModel):
     skills: list[str] = Field(default_factory=list)
 
 
+class StudentProfileUpdate(BaseModel):
+    university: str | None = None
+    major: str | None = None
+    graduation_year: int | None = Field(default=None, ge=1900, le=2100)
+    gpa: float | None = Field(default=None, ge=0, le=4)
+
+
 # ---------------------------------------------------------------------------
 # Internship certificates
 # ---------------------------------------------------------------------------
