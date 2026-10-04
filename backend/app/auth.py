@@ -78,49 +78,57 @@ def get_current_user(
     creds: Annotated[HTTPAuthorizationCredentials, Depends(bearer_scheme)],
     db: Annotated[Session, Depends(get_db)],
 ) -> User:
-    credentials_exc = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
+    def _exc(reason: str) -> HTTPException:
+        # TEMPORARY DEBUG — remove once the live 401 issue is found. Server-side logging
+        # isn't reaching Render's log viewer, so the real failure reason is surfaced
+        # directly in the response body instead, where it's visible in the browser.
+        return HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=f"Could not validate credentials: {reason}",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
     try:
         header = jwt.get_unverified_header(creds.credentials)
-        kid = header.get("kid")
-        logger.warning("auth: verifying token with header alg=%r kid=%r", header.get("alg"), kid)
-        signing_key = _get_signing_key(kid) if kid else None
+    except JWTError as exc:
+        raise _exc(f"could not parse token header: {exc}") from exc
 
-        try:
-            if signing_key is not None:
-                logger.warning("auth: using JWKS key kid=%r alg=%r", kid, signing_key.get("alg"))
-                payload = jwt.decode(
-                    creds.credentials,
-                    signing_key,
-                    algorithms=[signing_key.get("alg", "ES256")],
-                    audience=settings.jwt_audience,
-                )
-            else:
-                # Legacy shared-secret project (no JWKS, or no key matching this token's kid).
-                logger.warning("auth: no JWKS match for kid=%r — trying legacy HS256 secret", kid)
-                payload = jwt.decode(
-                    creds.credentials,
-                    settings.jwt_secret,
-                    algorithms=[settings.jwt_algorithm],
-                    audience=settings.jwt_audience,
-                )
-        except JWTError as exc:
-            logger.warning("auth: jwt.decode failed: %r", exc)
-            raise
+    kid = header.get("kid")
+    signing_key = _get_signing_key(kid) if kid else None
 
-        sub = payload.get("sub")
-        if not sub:
-            raise credentials_exc
+    try:
+        if signing_key is not None:
+            payload = jwt.decode(
+                creds.credentials,
+                signing_key,
+                algorithms=[signing_key.get("alg", "ES256")],
+                audience=settings.jwt_audience,
+            )
+        else:
+            # Legacy shared-secret project (no JWKS, or no key matching this token's kid).
+            payload = jwt.decode(
+                creds.credentials,
+                settings.jwt_secret,
+                algorithms=[settings.jwt_algorithm],
+                audience=settings.jwt_audience,
+            )
+    except JWTError as exc:
+        detail = f"jwt.decode failed (kid={kid!r}, alg={header.get('alg')!r}, used_jwks={signing_key is not None}"
+        if signing_key is None:
+            detail += f", supabase_url_set={bool(settings.supabase_url)}"
+        raise _exc(f"{detail}): {exc}") from exc
+
+    sub = payload.get("sub")
+    if not sub:
+        raise _exc("token payload has no 'sub' claim")
+    try:
         user_id = UUID(sub)
-    except (JWTError, ValueError) as exc:
-        raise credentials_exc from exc
+    except ValueError as exc:
+        raise _exc(f"sub {sub!r} is not a valid UUID: {exc}") from exc
 
     user = db.get(User, user_id)
     if user is None:
-        raise credentials_exc
+        raise _exc(f"no public.users row for user_id={user_id}")
     return user
 
 
