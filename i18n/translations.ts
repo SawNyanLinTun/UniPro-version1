@@ -116,6 +116,8 @@ const en = {
   'browse.apply': 'Apply',
   'browse.applied': 'Applied',
   'browse.signInToApply': 'Sign in to apply',
+  'browse.save': 'Save',
+  'browse.unsave': 'Remove from saved',
 
   // smartmatch
   'smart.badge': 'AI Propelled Matching',
@@ -169,6 +171,8 @@ const en = {
   'saved.title': 'Saved Roles',
   'saved.subtitle': 'Your curated selection of professional catalysts in Thailand.',
   'saved.empty': 'No roles saved yet.',
+  'saved.studentOnly': 'Student accounts only',
+  'saved.studentOnlyBody': 'Saving internships is for students browsing roles — companies manage postings from My Postings instead.',
 
   // applications
   'apps.title': 'Track Applications',
@@ -440,6 +444,8 @@ const th: Record<TranslationKey, string> = {
   'browse.apply': 'สมัคร',
   'browse.applied': 'สมัครแล้ว',
   'browse.signInToApply': 'เข้าสู่ระบบเพื่อสมัคร',
+  'browse.save': 'บันทึก',
+  'browse.unsave': 'ลบออกจากรายการที่บันทึก',
 
   'smart.badge': 'การจับคู่ขับเคลื่อนด้วย AI',
   'smart.title': 'SmartMatch AI Catalyst',
@@ -490,6 +496,8 @@ const th: Record<TranslationKey, string> = {
   'saved.title': 'ตำแหน่งที่บันทึก',
   'saved.subtitle': 'คอลเลกชันโอกาสอาชีพที่คุณคัดสรรในประเทศไทย',
   'saved.empty': 'ยังไม่มีตำแหน่งที่บันทึก',
+  'saved.studentOnly': 'สำหรับบัญชีนักศึกษาเท่านั้น',
+  'saved.studentOnlyBody': 'การบันทึกตำแหน่งฝึกงานมีไว้สำหรับนักศึกษาที่กำลังค้นหาตำแหน่ง — บริษัทจัดการประกาศงานได้ที่หน้าประกาศของฉัน',
 
   'apps.title': 'ติดตามใบสมัคร',
   'apps.titleCompany': 'ผู้สมัคร',

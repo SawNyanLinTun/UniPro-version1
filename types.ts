@@ -16,15 +16,6 @@ export interface Internship {
   skills?: string[];
 }
 
-export enum InternshipCategory {
-  SOFTWARE = 'Software Development',
-  DESIGN = 'Design',
-  MARKETING = 'Marketing',
-  DATA_SCIENCE = 'Data Science',
-  BUSINESS = 'Business',
-  FINANCE = 'Finance'
-}
-
 export type ApplicationStatus = 'applied' | 'under_review' | 'interview' | 'accepted' | 'rejected';
 
 export interface Application {

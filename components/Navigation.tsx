@@ -30,7 +30,7 @@ const Navigation: React.FC = () => {
       icon: <GraduationCap size={20} />,
       requiresAuth: true,
     },
-    { name: t('nav.saved'), path: '/saved', icon: <Heart size={20} /> },
+    ...(isCompany ? [] : [{ name: t('nav.saved'), path: '/saved', icon: <Heart size={20} /> }]),
     {
       name: isCompany ? t('nav.applicants') : t('nav.applications'),
       path: '/applications',

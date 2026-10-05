@@ -1,10 +1,11 @@
 
 import React, { useState } from 'react';
-import { Check, Loader2 } from 'lucide-react';
+import { Check, Heart, Loader2 } from 'lucide-react';
 import { Internship } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
 
 export type ApplyState = 'hidden' | 'locked' | 'idle' | 'busy' | 'applied';
+export type SaveState = 'hidden' | 'locked' | 'idle' | 'busy' | 'saved';
 
 interface InternshipCardProps {
   internship: Internship;
@@ -13,6 +14,9 @@ interface InternshipCardProps {
   applyState?: ApplyState;
   onApply?: () => void;
   onSignInRequired?: () => void;
+  /** Omit (defaults to 'hidden') on pages/viewers that shouldn't show a Save toggle, e.g. company accounts. */
+  saveState?: SaveState;
+  onToggleSave?: () => void;
 }
 
 const InternshipCard: React.FC<InternshipCardProps> = ({
@@ -21,6 +25,8 @@ const InternshipCard: React.FC<InternshipCardProps> = ({
   applyState = 'hidden',
   onApply,
   onSignInRequired,
+  saveState = 'hidden',
+  onToggleSave,
 }) => {
   const { t } = useLanguage();
   const [transform, setTransform] = useState('perspective(1000px) rotateX(0) rotateY(0)');
@@ -55,15 +61,38 @@ const InternshipCard: React.FC<InternshipCardProps> = ({
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
-      <div 
+      <div
         className="absolute pointer-events-none transition-opacity duration-300 w-40 h-40 rounded-full bg-gradient-to-r from-primary/15 to-transparent blur-xl"
-        style={{ 
-          left: `${distortionPos.x - 80}px`, 
+        style={{
+          left: `${distortionPos.x - 80}px`,
           top: `${distortionPos.y - 80}px`,
           opacity: distortionPos.opacity
         }}
       />
-      
+
+      {saveState !== 'hidden' && (
+        <button
+          type="button"
+          disabled={saveState === 'busy'}
+          onClick={(e) => {
+            e.stopPropagation();
+            if (saveState === 'locked') onSignInRequired?.();
+            else onToggleSave?.();
+          }}
+          aria-label={saveState === 'saved' ? t('browse.unsave') : t('browse.save')}
+          className="absolute top-6 right-6 z-20 p-2.5 rounded-full bg-surface-elevated/80 backdrop-blur-sm hover:bg-surface-elevated transition-colors disabled:opacity-50"
+        >
+          {saveState === 'busy' ? (
+            <Loader2 size={18} className="animate-spin text-text-muted" />
+          ) : (
+            <Heart
+              size={18}
+              className={saveState === 'saved' ? 'fill-error text-error' : 'text-text-muted'}
+            />
+          )}
+        </button>
+      )}
+
       <div className="relative z-10">
         <span className="font-mono text-[0.65rem] bg-surface-elevated py-1 px-3 rounded text-text-muted mb-6 inline-block uppercase tracking-wider">
           {internship.category}
