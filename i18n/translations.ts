@@ -252,7 +252,7 @@ const en = {
   // about
   'about.title': 'Bridging the Gap',
   'about.body':
-    'UniPro was born in Bangkok with a single mission: to redefine how the next generation of Thai builders find their professional footing. We believe an internship is more than just a 3-month tenure; it\'s a critical alignment phase for your future career.',
+    'UniPro was born in Chiang Mai with a single mission: to redefine how the next generation of Thai builders find their professional footing. We believe an internship is more than just a 3-month tenure; it\'s a critical alignment phase for your future career.',
   'about.dna': 'Our DNA',
   'about.card1Title': 'Algorithmic Integrity',
   'about.card1Body':
@@ -266,7 +266,7 @@ const en = {
     'Yes, our core matching features and browse capabilities are always free for university students.',
   'about.q2': 'How does SmartMatch work?',
   'about.a2':
-    'It combines your CV data with professor recommendations to calculate a 95%+ accurate match for specific roles.',
+    'It extracts your real skills from your CV with AI, then scores every internship with three transparent formulas — hard-skill coverage, skill gap, and semantic alignment — no professor ratings, no hidden inputs.',
   'about.q3': 'Can I apply from any university?',
   'about.a3': 'We currently support all major public and private universities across Thailand.',
 
@@ -574,7 +574,7 @@ const th: Record<TranslationKey, string> = {
 
   'about.title': 'เชื่อมช่องว่าง',
   'about.body':
-    'UniPro ถือกำเนิดในกรุงเทพฯ ด้วยพันธกิจเดียว: เปลี่ยนวิธีที่คนสร้างรุ่นใหม่ของไทยค้นหาจุดยืนในอาชีพ เราเชื่อว่าการฝึกงานไม่ใช่แค่ช่วงเวลา 3 เดือน แต่เป็นช่วงจัดแนวทางสู่อนาคต',
+    'UniPro ถือกำเนิดในเชียงใหม่ ด้วยพันธกิจเดียว: เปลี่ยนวิธีที่คนสร้างรุ่นใหม่ของไทยค้นหาจุดยืนในอาชีพ เราเชื่อว่าการฝึกงานไม่ใช่แค่ช่วงเวลา 3 เดือน แต่เป็นช่วงจัดแนวทางสู่อนาคต',
   'about.dna': 'DNA ของเรา',
   'about.card1Title': 'ความถูกต้องของอัลกอริทึม',
   'about.card1Body':
@@ -587,7 +587,7 @@ const th: Record<TranslationKey, string> = {
   'about.a1': 'ใช่ ฟีเจอร์จับคู่หลักและการค้นหาฟรีเสมอสำหรับนักศึกษามหาวิทยาลัย',
   'about.q2': 'SmartMatch ทำงานอย่างไร?',
   'about.a2':
-    'มันรวมข้อมูล CV กับคำแนะนำจากอาจารย์ เพื่อคำนวณความแม่นยำในการจับคู่กว่า 95% สำหรับตำแหน่งเฉพาะ',
+    'ระบบสกัดทักษะจริงจาก CV ของคุณด้วย AI แล้วให้คะแนนแต่ละตำแหน่งด้วยสูตรที่โปร่งใสสามแบบ — ความครอบคลุมทักษะ ช่องว่างทักษะ และความใกล้เคียงเชิงความหมาย — ไม่มีคะแนนจากอาจารย์ ไม่มีปัจจัยที่ซ่อนอยู่',
   'about.q3': 'สมัครจากมหาวิทยาลัยใดก็ได้หรือไม่?',
   'about.a3': 'ขณะนี้เรารองรับมหาวิทยาลัยของรัฐและเอกชนหลักทั่วประเทศไทย',
 
